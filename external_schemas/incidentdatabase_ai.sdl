@@ -1,0 +1,2486 @@
+"""
+Indicates exactly one field must be supplied and this field must not be `null`.
+"""
+directive @oneOf on INPUT_OBJECT
+
+type Query {
+  """Custom scalar for MongoDB ObjectID"""
+  ObjectId: ObjectId
+  quickadd(filter: QuickaddFilterType, sort: QuickaddSortType, pagination: PaginationType): Quickadd
+  quickadds(filter: QuickaddFilterType, sort: QuickaddSortType, pagination: PaginationType): [Quickadd]
+  report(filter: ReportFilterType, sort: ReportSortType, pagination: PaginationType): Report
+  reports(filter: ReportFilterType, sort: ReportSortType, pagination: PaginationType): [Report]
+  incident(filter: IncidentFilterType, sort: IncidentSortType, pagination: PaginationType): Incident
+  incidents(filter: IncidentFilterType, sort: IncidentSortType, pagination: PaginationType): [Incident]
+  entity(filter: EntityFilterType, sort: EntitySortType, pagination: PaginationType): Entity
+  entities(filter: EntityFilterType, sort: EntitySortType, pagination: PaginationType): [Entity]
+  similarEntities(threshold: Int!, offset: Int, limit: Int): SimilarEntitiesResult
+  user(filter: UserFilterType, sort: UserSortType, pagination: PaginationType): User
+  users(filter: UserFilterType, sort: UserSortType, pagination: PaginationType): [User]
+  submission(filter: SubmissionFilterType, sort: SubmissionSortType, pagination: PaginationType): Submission
+  submissions(filter: SubmissionFilterType, sort: SubmissionSortType, pagination: PaginationType): [Submission]
+  entity_relationship(filter: Entity_relationshipFilterType, sort: Entity_relationshipSortType, pagination: PaginationType): Entity_relationship
+  entity_relationships(filter: Entity_relationshipFilterType, sort: Entity_relationshipSortType, pagination: PaginationType): [Entity_relationship]
+  classification(filter: ClassificationFilterType, sort: ClassificationSortType, pagination: PaginationType): Classification
+  classifications(filter: ClassificationFilterType, sort: ClassificationSortType, pagination: PaginationType): [Classification]
+  taxa(filter: TaxaFilterType, sort: TaxaSortType, pagination: PaginationType): Taxa
+  taxas(filter: TaxaFilterType, sort: TaxaSortType, pagination: PaginationType): [Taxa]
+  candidate(filter: CandidateFilterType, sort: CandidateSortType, pagination: PaginationType): Candidate
+  candidates(filter: CandidateFilterType, sort: CandidateSortType, pagination: PaginationType): [Candidate]
+  subscription(filter: SubscriptionFilterType, sort: SubscriptionSortType, pagination: PaginationType): Subscription
+  subscriptions(filter: SubscriptionFilterType, sort: SubscriptionSortType, pagination: PaginationType): [Subscription]
+  duplicate(filter: DuplicateFilterType, sort: DuplicateSortType, pagination: PaginationType): Duplicate
+  duplicates(filter: DuplicateFilterType, sort: DuplicateSortType, pagination: PaginationType): [Duplicate]
+  notification(filter: NotificationFilterType, sort: NotificationSortType, pagination: PaginationType): Notification
+  notifications(filter: NotificationFilterType, sort: NotificationSortType, pagination: PaginationType): [Notification]
+  history_report(filter: History_reportFilterType, sort: History_reportSortType, pagination: PaginationType): History_report
+  history_reports(filter: History_reportFilterType, sort: History_reportSortType, pagination: PaginationType): [History_report]
+  history_incident(filter: History_incidentFilterType, sort: History_incidentSortType, pagination: PaginationType): History_incident
+  history_incidents(filter: History_incidentFilterType, sort: History_incidentSortType, pagination: PaginationType): [History_incident]
+  checklist(filter: ChecklistFilterType, sort: ChecklistSortType, pagination: PaginationType): Checklist
+  checklists(filter: ChecklistFilterType, sort: ChecklistSortType, pagination: PaginationType): [Checklist]
+  risks(input: RisksInput): [Risks]
+  entityDuplicate(filter: EntityDuplicateFilterType, sort: EntityDuplicateSortType, pagination: PaginationType): EntityDuplicate
+  entityDuplicates(filter: EntityDuplicateFilterType, sort: EntityDuplicateSortType, pagination: PaginationType): [EntityDuplicate]
+}
+
+"""Mongo object id scalar type"""
+scalar ObjectId
+
+type Quickadd {
+  _id: ObjectId
+  date_submitted: String!
+  incident_id: Int
+  source_domain: String
+  url: String!
+}
+
+input QuickaddFilterType {
+  _id: ObjectIdFilter
+  date_submitted: StringFilter
+  incident_id: IntFilter
+  source_domain: StringFilter
+  url: StringFilter
+  OR: [QuickaddFilterType]
+  AND: [QuickaddFilterType]
+  NOR: [QuickaddFilterType]
+}
+
+"""Filter type for ObjectId scalar"""
+input ObjectIdFilter {
+  """$eq"""
+  EQ: ObjectId
+
+  """$gt"""
+  GT: ObjectId
+
+  """$gte"""
+  GTE: ObjectId
+
+  """$in"""
+  IN: [ObjectId]
+
+  """$all"""
+  ALL: [ObjectId]
+
+  """$lt"""
+  LT: ObjectId
+
+  """$lte"""
+  LTE: ObjectId
+
+  """$ne"""
+  NE: ObjectId
+
+  """$nin"""
+  NIN: [ObjectId]
+
+  """$not"""
+  NOT: ObjectIdNotFilter
+
+  """DEPRECATED: Switched to the more intuitive operator fields"""
+  opr: Opr
+
+  """DEPRECATED: Switched to the more intuitive operator fields"""
+  value: ObjectId
+
+  """DEPRECATED: Switched to the more intuitive operator fields"""
+  values: [ObjectId]
+
+  """DEPRECATED: use NE"""
+  NEQ: ObjectId
+}
+
+"""Filter type for $not of ObjectId scalar"""
+input ObjectIdNotFilter {
+  """$eq"""
+  EQ: ObjectId
+
+  """$gt"""
+  GT: ObjectId
+
+  """$gte"""
+  GTE: ObjectId
+
+  """$in"""
+  IN: [ObjectId]
+
+  """$all"""
+  ALL: [ObjectId]
+
+  """$lt"""
+  LT: ObjectId
+
+  """$lte"""
+  LTE: ObjectId
+
+  """$ne"""
+  NE: ObjectId
+
+  """$nin"""
+  NIN: [ObjectId]
+}
+
+enum Opr {
+  EQL
+  GT
+  GTE
+  IN
+  ALL
+  LT
+  LTE
+  NE
+  NIN
+}
+
+"""Filter type for String scalar"""
+input StringFilter {
+  """$eq"""
+  EQ: String
+
+  """$gt"""
+  GT: String
+
+  """$gte"""
+  GTE: String
+
+  """$in"""
+  IN: [String]
+
+  """$all"""
+  ALL: [String]
+
+  """$lt"""
+  LT: String
+
+  """$lte"""
+  LTE: String
+
+  """$ne"""
+  NE: String
+
+  """$nin"""
+  NIN: [String]
+
+  """$regex"""
+  REGEX: String
+
+  """
+  $options. Modifiers for the $regex expression. Field is ignored on its own
+  """
+  OPTIONS: String
+
+  """$not"""
+  NOT: StringNotFilter
+
+  """DEPRECATED: Switched to the more intuitive operator fields"""
+  opr: Opr
+
+  """DEPRECATED: Switched to the more intuitive operator fields"""
+  value: String
+
+  """DEPRECATED: Switched to the more intuitive operator fields"""
+  values: [String]
+
+  """DEPRECATED: use NE"""
+  NEQ: String
+}
+
+"""Filter type for $not of String scalar"""
+input StringNotFilter {
+  """$eq"""
+  EQ: String
+
+  """$gt"""
+  GT: String
+
+  """$gte"""
+  GTE: String
+
+  """$in"""
+  IN: [String]
+
+  """$all"""
+  ALL: [String]
+
+  """$lt"""
+  LT: String
+
+  """$lte"""
+  LTE: String
+
+  """$ne"""
+  NE: String
+
+  """$nin"""
+  NIN: [String]
+
+  """$regex"""
+  REGEX: String
+
+  """
+  $options. Modifiers for the $regex expression. Field is ignored on its own
+  """
+  OPTIONS: String
+}
+
+"""Filter type for Int scalar"""
+input IntFilter {
+  """$eq"""
+  EQ: Int
+
+  """$gt"""
+  GT: Int
+
+  """$gte"""
+  GTE: Int
+
+  """$in"""
+  IN: [Int]
+
+  """$all"""
+  ALL: [Int]
+
+  """$lt"""
+  LT: Int
+
+  """$lte"""
+  LTE: Int
+
+  """$ne"""
+  NE: Int
+
+  """$nin"""
+  NIN: [Int]
+
+  """$not"""
+  NOT: IntNotFilter
+
+  """DEPRECATED: Switched to the more intuitive operator fields"""
+  opr: Opr
+
+  """DEPRECATED: Switched to the more intuitive operator fields"""
+  value: Int
+
+  """DEPRECATED: Switched to the more intuitive operator fields"""
+  values: [Int]
+
+  """DEPRECATED: use NE"""
+  NEQ: Int
+}
+
+"""Filter type for $not of Int scalar"""
+input IntNotFilter {
+  """$eq"""
+  EQ: Int
+
+  """$gt"""
+  GT: Int
+
+  """$gte"""
+  GTE: Int
+
+  """$in"""
+  IN: [Int]
+
+  """$all"""
+  ALL: [Int]
+
+  """$lt"""
+  LT: Int
+
+  """$lte"""
+  LTE: Int
+
+  """$ne"""
+  NE: Int
+
+  """$nin"""
+  NIN: [Int]
+}
+
+input QuickaddSortType {
+  _id: SortType
+  date_submitted: SortType
+  incident_id: SortType
+  source_domain: SortType
+  url: SortType
+}
+
+enum SortType {
+  ASC
+  DESC
+}
+
+input PaginationType {
+  limit: Int
+  skip: Int
+}
+
+type Report {
+  _id: ObjectId
+  authors: [String]!
+  cloudinary_id: String!
+  created_at: DateTime
+  date_downloaded: DateTime!
+  date_modified: DateTime!
+  date_published: DateTime!
+  date_submitted: DateTime!
+  description: String
+  editor_notes: String
+  embedding: ReportEmbedding
+  epoch_date_published: Int!
+  epoch_date_submitted: Int!
+  flag: Boolean
+  image_url: String!
+  inputs_outputs: [String]
+  is_incident_report: Boolean
+  language: String!
+  plain_text: String!
+  report_number: Int!
+  source_domain: String!
+  snippet_max_characters: Int
+  submitters: [String]!
+  tags: [String]!
+  text: String!
+  title: String!
+  url: String!
+  user: User
+  quiet: Boolean
+  translations(languages: [String]!): [ReportTranslations]
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+type ReportEmbedding {
+  from_text_hash: String
+  vector: [Float]
+}
+
+type User {
+  _id: ObjectId
+  adminData: UserAdminDatum
+  first_name: String
+  last_name: String
+  roles: [String]!
+  userId: String!
+}
+
+type UserAdminDatum {
+  creationDate: DateTime!
+  disabled: Boolean!
+  email: String!
+  lastAuthenticationDate: DateTime
+}
+
+type ReportTranslations {
+  text: String
+  title: String
+  plain_text: String
+  language: String!
+  dirty: Boolean
+}
+
+input ReportFilterType {
+  _id: ObjectIdFilter
+  authors: StringFilter
+  cloudinary_id: StringFilter
+  created_at: DateTimeFilter
+  date_downloaded: DateTimeFilter
+  date_modified: DateTimeFilter
+  date_published: DateTimeFilter
+  date_submitted: DateTimeFilter
+  description: StringFilter
+  editor_notes: StringFilter
+  embedding: ReportEmbeddingObjectFilterType
+  epoch_date_published: IntFilter
+  epoch_date_submitted: IntFilter
+  flag: BooleanFilter
+  image_url: StringFilter
+  inputs_outputs: StringFilter
+  is_incident_report: BooleanFilter
+  language: StringFilter
+  plain_text: StringFilter
+  report_number: IntFilter
+  source_domain: StringFilter
+  snippet_max_characters: IntFilter
+  submitters: StringFilter
+  tags: StringFilter
+  text: StringFilter
+  title: StringFilter
+  url: StringFilter
+  user: StringFilter
+  quiet: BooleanFilter
+  OR: [ReportFilterType]
+  AND: [ReportFilterType]
+  NOR: [ReportFilterType]
+}
+
+"""Filter type for DateTime scalar"""
+input DateTimeFilter {
+  """$eq"""
+  EQ: DateTime
+
+  """$gt"""
+  GT: DateTime
+
+  """$gte"""
+  GTE: DateTime
+
+  """$in"""
+  IN: [DateTime]
+
+  """$all"""
+  ALL: [DateTime]
+
+  """$lt"""
+  LT: DateTime
+
+  """$lte"""
+  LTE: DateTime
+
+  """$ne"""
+  NE: DateTime
+
+  """$nin"""
+  NIN: [DateTime]
+
+  """$not"""
+  NOT: DateTimeNotFilter
+
+  """DEPRECATED: Switched to the more intuitive operator fields"""
+  opr: Opr
+
+  """DEPRECATED: Switched to the more intuitive operator fields"""
+  value: DateTime
+
+  """DEPRECATED: Switched to the more intuitive operator fields"""
+  values: [DateTime]
+
+  """DEPRECATED: use NE"""
+  NEQ: DateTime
+}
+
+"""Filter type for $not of DateTime scalar"""
+input DateTimeNotFilter {
+  """$eq"""
+  EQ: DateTime
+
+  """$gt"""
+  GT: DateTime
+
+  """$gte"""
+  GTE: DateTime
+
+  """$in"""
+  IN: [DateTime]
+
+  """$all"""
+  ALL: [DateTime]
+
+  """$lt"""
+  LT: DateTime
+
+  """$lte"""
+  LTE: DateTime
+
+  """$ne"""
+  NE: DateTime
+
+  """$nin"""
+  NIN: [DateTime]
+}
+
+input ReportEmbeddingObjectFilterType {
+  from_text_hash: StringFilter
+  vector: FloatFilter
+  opr: OprExists
+}
+
+"""Filter type for Float scalar"""
+input FloatFilter {
+  """$eq"""
+  EQ: Float
+
+  """$gt"""
+  GT: Float
+
+  """$gte"""
+  GTE: Float
+
+  """$in"""
+  IN: [Float]
+
+  """$all"""
+  ALL: [Float]
+
+  """$lt"""
+  LT: Float
+
+  """$lte"""
+  LTE: Float
+
+  """$ne"""
+  NE: Float
+
+  """$nin"""
+  NIN: [Float]
+
+  """$not"""
+  NOT: FloatNotFilter
+
+  """DEPRECATED: Switched to the more intuitive operator fields"""
+  opr: Opr
+
+  """DEPRECATED: Switched to the more intuitive operator fields"""
+  value: Float
+
+  """DEPRECATED: Switched to the more intuitive operator fields"""
+  values: [Float]
+
+  """DEPRECATED: use NE"""
+  NEQ: Float
+}
+
+"""Filter type for $not of Float scalar"""
+input FloatNotFilter {
+  """$eq"""
+  EQ: Float
+
+  """$gt"""
+  GT: Float
+
+  """$gte"""
+  GTE: Float
+
+  """$in"""
+  IN: [Float]
+
+  """$all"""
+  ALL: [Float]
+
+  """$lt"""
+  LT: Float
+
+  """$lte"""
+  LTE: Float
+
+  """$ne"""
+  NE: Float
+
+  """$nin"""
+  NIN: [Float]
+}
+
+enum OprExists {
+  EXISTS
+  NOT_EXISTS
+}
+
+"""Filter type for Boolean scalar"""
+input BooleanFilter {
+  """$eq"""
+  EQ: Boolean
+
+  """$gt"""
+  GT: Boolean
+
+  """$gte"""
+  GTE: Boolean
+
+  """$in"""
+  IN: [Boolean]
+
+  """$all"""
+  ALL: [Boolean]
+
+  """$lt"""
+  LT: Boolean
+
+  """$lte"""
+  LTE: Boolean
+
+  """$ne"""
+  NE: Boolean
+
+  """$nin"""
+  NIN: [Boolean]
+
+  """$not"""
+  NOT: BooleanNotFilter
+
+  """DEPRECATED: Switched to the more intuitive operator fields"""
+  opr: Opr
+
+  """DEPRECATED: Switched to the more intuitive operator fields"""
+  value: Boolean
+
+  """DEPRECATED: Switched to the more intuitive operator fields"""
+  values: [Boolean]
+
+  """DEPRECATED: use NE"""
+  NEQ: Boolean
+}
+
+"""Filter type for $not of Boolean scalar"""
+input BooleanNotFilter {
+  """$eq"""
+  EQ: Boolean
+
+  """$gt"""
+  GT: Boolean
+
+  """$gte"""
+  GTE: Boolean
+
+  """$in"""
+  IN: [Boolean]
+
+  """$all"""
+  ALL: [Boolean]
+
+  """$lt"""
+  LT: Boolean
+
+  """$lte"""
+  LTE: Boolean
+
+  """$ne"""
+  NE: Boolean
+
+  """$nin"""
+  NIN: [Boolean]
+}
+
+input ReportSortType {
+  _id: SortType
+  cloudinary_id: SortType
+  created_at: SortType
+  date_downloaded: SortType
+  date_modified: SortType
+  date_published: SortType
+  date_submitted: SortType
+  description: SortType
+  editor_notes: SortType
+  embedding: ReportEmbeddingSortType
+  epoch_date_published: SortType
+  epoch_date_submitted: SortType
+  flag: SortType
+  image_url: SortType
+  is_incident_report: SortType
+  language: SortType
+  plain_text: SortType
+  report_number: SortType
+  source_domain: SortType
+  snippet_max_characters: SortType
+  text: SortType
+  title: SortType
+  url: SortType
+  quiet: SortType
+}
+
+input ReportEmbeddingSortType {
+  from_text_hash: SortType
+}
+
+type Incident {
+  _id: ObjectId
+  date: String!
+  description: String
+  editor_notes: String!
+  date_modified: DateTime
+  incident_id: Int!
+  title: String!
+  AllegedDeployerOfAISystem: [Entity]
+  AllegedDeveloperOfAISystem: [Entity]
+  AllegedHarmedOrNearlyHarmedParties: [Entity]
+  classifications: [Classification]
+  implicated_systems: [Entity]
+  editor_dissimilar_incidents: [Int]
+  editor_similar_incidents: [Int]
+  editors: [User]
+  embedding: IncidentEmbedding
+  flagged_dissimilar_incidents: [Int]!
+  nlp_similar_incidents: [IncidentNlp_similar_incident]
+  reports: [Report]
+  tsne: IncidentTsne
+  created_at: DateTime
+  translations(languages: [String]!): [IncidentTranslations]
+}
+
+type Entity {
+  _id: ObjectId
+  entity_id: String!
+  name: String!
+  created_at: DateTime
+  date_modified: DateTime
+}
+
+type Classification {
+  _id: ObjectId
+  attributes: [Attribute]
+  incidents: [Incident]
+  namespace: String!
+  notes: String
+  publish: Boolean
+  reports: [Report]
+}
+
+type Attribute {
+  short_name: String
+  value_json: String
+}
+
+type IncidentEmbedding {
+  from_reports: [Int]
+  vector: [Float]
+}
+
+type IncidentNlp_similar_incident {
+  incident_id: Int
+  similarity: Float
+}
+
+type IncidentTsne {
+  x: Float
+  y: Float
+}
+
+type IncidentTranslations {
+  language: String
+  title: String
+  description: String
+  dirty: Boolean
+}
+
+input IncidentFilterType {
+  _id: ObjectIdFilter
+  date: StringFilter
+  description: StringFilter
+  editor_notes: StringFilter
+  date_modified: DateTimeFilter
+  incident_id: IntFilter
+  title: StringFilter
+  AllegedDeployerOfAISystem: StringFilter
+  AllegedDeveloperOfAISystem: StringFilter
+  AllegedHarmedOrNearlyHarmedParties: StringFilter
+  implicated_systems: StringFilter
+  editor_dissimilar_incidents: IntFilter
+  editor_similar_incidents: IntFilter
+  editors: StringFilter
+  embedding: IncidentEmbeddingObjectFilterType
+  flagged_dissimilar_incidents: IntFilter
+  nlp_similar_incidents: IncidentNlp_similar_incidentObjectFilterType
+  reports: IntFilter
+  tsne: IncidentTsneObjectFilterType
+  created_at: DateTimeFilter
+  OR: [IncidentFilterType]
+  AND: [IncidentFilterType]
+  NOR: [IncidentFilterType]
+}
+
+input IncidentEmbeddingObjectFilterType {
+  from_reports: IntFilter
+  vector: FloatFilter
+  opr: OprExists
+}
+
+input IncidentNlp_similar_incidentObjectFilterType {
+  incident_id: IntFilter
+  similarity: FloatFilter
+  opr: OprExists
+}
+
+input IncidentTsneObjectFilterType {
+  x: FloatFilter
+  y: FloatFilter
+  opr: OprExists
+}
+
+input IncidentSortType {
+  _id: SortType
+  date: SortType
+  description: SortType
+  editor_notes: SortType
+  date_modified: SortType
+  incident_id: SortType
+  title: SortType
+  embedding: IncidentEmbeddingSortType
+  tsne: IncidentTsneSortType
+  created_at: SortType
+}
+
+input IncidentEmbeddingSortType {
+  """
+  IGNORE. Due to limitations of the package, objects with no sortable fields are not ommited. GraphQL input object types must have at least one field
+  """
+  _FICTIVE_SORT: SortType
+}
+
+input IncidentTsneSortType {
+  x: SortType
+  y: SortType
+}
+
+input EntityFilterType {
+  _id: ObjectIdFilter
+  entity_id: StringFilter
+  name: StringFilter
+  created_at: DateTimeFilter
+  date_modified: DateTimeFilter
+  OR: [EntityFilterType]
+  AND: [EntityFilterType]
+  NOR: [EntityFilterType]
+}
+
+input EntitySortType {
+  _id: SortType
+  entity_id: SortType
+  name: SortType
+  created_at: SortType
+  date_modified: SortType
+}
+
+type SimilarEntitiesResult {
+  pairs: [SimilarEntityPair]!
+  hasMore: Boolean!
+}
+
+type SimilarEntityPair {
+  entityId1: String!
+  entityName1: String!
+  entityId2: String!
+  entityName2: String!
+  similarity: Float!
+}
+
+input UserFilterType {
+  _id: ObjectIdFilter
+  first_name: StringFilter
+  last_name: StringFilter
+  roles: StringFilter
+  userId: StringFilter
+  OR: [UserFilterType]
+  AND: [UserFilterType]
+  NOR: [UserFilterType]
+}
+
+input UserSortType {
+  _id: SortType
+  first_name: SortType
+  last_name: SortType
+  userId: SortType
+}
+
+type Submission {
+  _id: ObjectId
+  authors: [String]!
+  cloudinary_id: String
+  date_downloaded: String!
+  date_modified: String!
+  date_published: String!
+  date_submitted: String!
+  deployers: [Entity]
+  description: String
+  developers: [Entity]
+  editor_dissimilar_incidents: [Int]
+  editor_notes: String
+  editor_similar_incidents: [Int]
+  embedding: Embedding
+  epoch_date_modified: Long
+  harmed_parties: [Entity]
+  image_url: String!
+  incident_date: String
+  incident_editors: [User]
+  incident_ids: [Int]
+  incident_title: String
+  language: String!
+  nlp_similar_incidents: [IncidentNlp_similar_incident]
+  plain_text: String
+  source_domain: String!
+  submitters: [String]!
+  tags: [String]!
+  text: String!
+  title: String!
+  url: String!
+  user: User
+  status: String
+  snippet_max_characters: Int
+  quiet: Boolean
+  implicated_systems: [Entity]
+}
+
+type Embedding {
+  from_text_hash: String
+  vector: [Float]
+}
+
+"""
+The `BigInt` scalar type represents non-fractional signed whole numeric values.
+"""
+scalar Long
+
+input SubmissionFilterType {
+  _id: ObjectIdFilter
+  authors: StringFilter
+  cloudinary_id: StringFilter
+  date_downloaded: StringFilter
+  date_modified: StringFilter
+  date_published: StringFilter
+  date_submitted: StringFilter
+  deployers: StringFilter
+  description: StringFilter
+  developers: StringFilter
+  editor_dissimilar_incidents: IntFilter
+  editor_notes: StringFilter
+  editor_similar_incidents: IntFilter
+  embedding: EmbeddingObjectFilterType
+  epoch_date_modified: LongFilter
+  harmed_parties: StringFilter
+  image_url: StringFilter
+  incident_date: StringFilter
+  incident_editors: StringFilter
+  incident_ids: IntFilter
+  incident_title: StringFilter
+  language: StringFilter
+  nlp_similar_incidents: IncidentNlp_similar_incidentObjectFilterType
+  plain_text: StringFilter
+  source_domain: StringFilter
+  submitters: StringFilter
+  tags: StringFilter
+  text: StringFilter
+  title: StringFilter
+  url: StringFilter
+  user: StringFilter
+  status: StringFilter
+  snippet_max_characters: IntFilter
+  quiet: BooleanFilter
+  implicated_systems: StringFilter
+  OR: [SubmissionFilterType]
+  AND: [SubmissionFilterType]
+  NOR: [SubmissionFilterType]
+}
+
+input EmbeddingObjectFilterType {
+  from_text_hash: StringFilter
+  vector: FloatFilter
+  opr: OprExists
+}
+
+"""Filter type for Long scalar"""
+input LongFilter {
+  """$eq"""
+  EQ: Long
+
+  """$gt"""
+  GT: Long
+
+  """$gte"""
+  GTE: Long
+
+  """$in"""
+  IN: [Long]
+
+  """$all"""
+  ALL: [Long]
+
+  """$lt"""
+  LT: Long
+
+  """$lte"""
+  LTE: Long
+
+  """$ne"""
+  NE: Long
+
+  """$nin"""
+  NIN: [Long]
+
+  """$not"""
+  NOT: LongNotFilter
+
+  """DEPRECATED: Switched to the more intuitive operator fields"""
+  opr: Opr
+
+  """DEPRECATED: Switched to the more intuitive operator fields"""
+  value: Long
+
+  """DEPRECATED: Switched to the more intuitive operator fields"""
+  values: [Long]
+
+  """DEPRECATED: use NE"""
+  NEQ: Long
+}
+
+"""Filter type for $not of Long scalar"""
+input LongNotFilter {
+  """$eq"""
+  EQ: Long
+
+  """$gt"""
+  GT: Long
+
+  """$gte"""
+  GTE: Long
+
+  """$in"""
+  IN: [Long]
+
+  """$all"""
+  ALL: [Long]
+
+  """$lt"""
+  LT: Long
+
+  """$lte"""
+  LTE: Long
+
+  """$ne"""
+  NE: Long
+
+  """$nin"""
+  NIN: [Long]
+}
+
+input SubmissionSortType {
+  _id: SortType
+  cloudinary_id: SortType
+  date_downloaded: SortType
+  date_modified: SortType
+  date_published: SortType
+  date_submitted: SortType
+  description: SortType
+  editor_notes: SortType
+  embedding: EmbeddingSortType
+  epoch_date_modified: SortType
+  image_url: SortType
+  incident_date: SortType
+  incident_title: SortType
+  language: SortType
+  plain_text: SortType
+  source_domain: SortType
+  text: SortType
+  title: SortType
+  url: SortType
+  status: SortType
+  snippet_max_characters: SortType
+  quiet: SortType
+}
+
+input EmbeddingSortType {
+  from_text_hash: SortType
+}
+
+type Entity_relationship {
+  _id: ObjectId
+  pred: String
+  is_symmetric: Boolean
+  obj: Entity
+  sub: Entity
+  created_at: DateTime
+}
+
+input Entity_relationshipFilterType {
+  _id: ObjectIdFilter
+  pred: StringFilter
+  is_symmetric: BooleanFilter
+  obj: StringFilter
+  sub: StringFilter
+  created_at: DateTimeFilter
+  OR: [Entity_relationshipFilterType]
+  AND: [Entity_relationshipFilterType]
+  NOR: [Entity_relationshipFilterType]
+}
+
+input Entity_relationshipSortType {
+  _id: SortType
+  pred: SortType
+  is_symmetric: SortType
+  created_at: SortType
+}
+
+input ClassificationFilterType {
+  _id: ObjectIdFilter
+  attributes: AttributeObjectFilterType
+  incidents: IntFilter
+  namespace: StringFilter
+  notes: StringFilter
+  publish: BooleanFilter
+  reports: IntFilter
+  OR: [ClassificationFilterType]
+  AND: [ClassificationFilterType]
+  NOR: [ClassificationFilterType]
+}
+
+input AttributeObjectFilterType {
+  short_name: StringFilter
+  value_json: StringFilter
+  opr: OprExists
+}
+
+input ClassificationSortType {
+  _id: SortType
+  namespace: SortType
+  notes: SortType
+  publish: SortType
+}
+
+type Taxa {
+  _id: ObjectId
+  complete_entities: Boolean
+  description: String
+  dummy_fields: [DummyFields]
+  field_list: [FieldList]
+  namespace: String
+  weight: Int
+  automatedClassifications: Boolean
+}
+
+type DummyFields {
+  field_number: String
+  short_name: String
+}
+
+type FieldList {
+  complete_from: CompleteFrom
+  default: String
+  display_type: String
+  field_number: String
+  instant_facet: Boolean
+  item_fields: ItemFields
+  long_description: String
+  long_name: String
+  mongo_type: String
+  permitted_values: [String]
+  placeholder: String
+  public: Boolean
+  hide_search: Boolean
+  required: Boolean
+  short_description: String
+  short_name: String
+  weight: Int
+  notes: String
+  subfields: [Subfield]
+}
+
+type CompleteFrom {
+  all: [String]
+  current: [String]
+}
+
+type ItemFields {
+  complete_from: CompleteFrom
+  default: String
+  display_type: String
+  field_number: String
+  instant_facet: Boolean
+  long_description: String
+  long_name: String
+  mongo_type: String
+  permitted_values: [String]
+  placeholder: String
+  public: Boolean
+  required: Boolean
+  short_description: String
+  short_name: String
+  weight: Int
+}
+
+type Subfield {
+  field_number: String
+  short_name: String
+  long_name: String
+  short_description: String
+  long_description: String
+  display_type: String
+  mongo_type: String
+  default: String
+  placeholder: String
+  permitted_values: [String]
+  weight: Int
+  instant_facet: Boolean
+  required: Boolean
+  public: Boolean
+  complete_from: SubfieldCompleteFrom
+  hide_search: Boolean
+}
+
+type SubfieldCompleteFrom {
+  all: [String]
+  current: [String]
+  entities: Boolean
+}
+
+input TaxaFilterType {
+  _id: ObjectIdFilter
+  complete_entities: BooleanFilter
+  description: StringFilter
+  dummy_fields: DummyFieldsObjectFilterType
+  field_list: FieldListObjectFilterType
+  namespace: StringFilter
+  weight: IntFilter
+  automatedClassifications: BooleanFilter
+  OR: [TaxaFilterType]
+  AND: [TaxaFilterType]
+  NOR: [TaxaFilterType]
+}
+
+input DummyFieldsObjectFilterType {
+  field_number: StringFilter
+  short_name: StringFilter
+  opr: OprExists
+}
+
+input FieldListObjectFilterType {
+  complete_from: CompleteFromObjectFilterType
+  default: StringFilter
+  display_type: StringFilter
+  field_number: StringFilter
+  instant_facet: BooleanFilter
+  item_fields: ItemFieldsObjectFilterType
+  long_description: StringFilter
+  long_name: StringFilter
+  mongo_type: StringFilter
+  permitted_values: StringFilter
+  placeholder: StringFilter
+  public: BooleanFilter
+  hide_search: BooleanFilter
+  required: BooleanFilter
+  short_description: StringFilter
+  short_name: StringFilter
+  weight: IntFilter
+  notes: StringFilter
+  subfields: SubfieldObjectFilterType
+  opr: OprExists
+}
+
+input CompleteFromObjectFilterType {
+  all: StringFilter
+  current: StringFilter
+  opr: OprExists
+}
+
+input ItemFieldsObjectFilterType {
+  complete_from: CompleteFromObjectFilterType
+  default: StringFilter
+  display_type: StringFilter
+  field_number: StringFilter
+  instant_facet: BooleanFilter
+  long_description: StringFilter
+  long_name: StringFilter
+  mongo_type: StringFilter
+  permitted_values: StringFilter
+  placeholder: StringFilter
+  public: BooleanFilter
+  required: BooleanFilter
+  short_description: StringFilter
+  short_name: StringFilter
+  weight: IntFilter
+  opr: OprExists
+}
+
+input SubfieldObjectFilterType {
+  field_number: StringFilter
+  short_name: StringFilter
+  long_name: StringFilter
+  short_description: StringFilter
+  long_description: StringFilter
+  display_type: StringFilter
+  mongo_type: StringFilter
+  default: StringFilter
+  placeholder: StringFilter
+  permitted_values: StringFilter
+  weight: IntFilter
+  instant_facet: BooleanFilter
+  required: BooleanFilter
+  public: BooleanFilter
+  complete_from: SubfieldCompleteFromObjectFilterType
+  hide_search: BooleanFilter
+  opr: OprExists
+}
+
+input SubfieldCompleteFromObjectFilterType {
+  all: StringFilter
+  current: StringFilter
+  entities: BooleanFilter
+  opr: OprExists
+}
+
+input TaxaSortType {
+  _id: SortType
+  complete_entities: SortType
+  description: SortType
+  namespace: SortType
+  weight: SortType
+  automatedClassifications: SortType
+}
+
+type Candidate {
+  _id: ObjectId
+  title: String!
+  date_published: String!
+  matching_keywords: [String]
+  matching_harm_keywords: [String]
+  matching_entities: [String]
+  embedding: CandidateEmbedding
+  similarity: Float
+  match: Boolean
+  created_at: DateTime
+  url: String!
+  dismissed: Boolean
+  text: String
+  plain_text: String
+}
+
+type CandidateEmbedding {
+  vector: [Int]
+  source: String
+}
+
+input CandidateFilterType {
+  _id: ObjectIdFilter
+  title: StringFilter
+  date_published: StringFilter
+  matching_keywords: StringFilter
+  matching_harm_keywords: StringFilter
+  matching_entities: StringFilter
+  embedding: CandidateEmbeddingObjectFilterType
+  similarity: FloatFilter
+  match: BooleanFilter
+  created_at: DateTimeFilter
+  url: StringFilter
+  dismissed: BooleanFilter
+  text: StringFilter
+  plain_text: StringFilter
+  OR: [CandidateFilterType]
+  AND: [CandidateFilterType]
+  NOR: [CandidateFilterType]
+}
+
+input CandidateEmbeddingObjectFilterType {
+  vector: IntFilter
+  source: StringFilter
+  opr: OprExists
+}
+
+input CandidateSortType {
+  _id: SortType
+  title: SortType
+  date_published: SortType
+  embedding: CandidateEmbeddingSortType
+  similarity: SortType
+  match: SortType
+  created_at: SortType
+  url: SortType
+  dismissed: SortType
+  text: SortType
+  plain_text: SortType
+}
+
+input CandidateEmbeddingSortType {
+  source: SortType
+}
+
+type Subscription {
+  _id: ObjectId
+  entityId: Entity
+  incident_id: Incident
+  type: String!
+  userId: User
+}
+
+input SubscriptionFilterType {
+  _id: ObjectIdFilter
+  entityId: StringFilter
+  incident_id: IntFilter
+  type: StringFilter
+  userId: StringFilter
+  OR: [SubscriptionFilterType]
+  AND: [SubscriptionFilterType]
+  NOR: [SubscriptionFilterType]
+}
+
+input SubscriptionSortType {
+  _id: SortType
+  type: SortType
+}
+
+type Duplicate {
+  _id: ObjectId
+  duplicate_incident_number: Int
+  true_incident_number: Int
+}
+
+input DuplicateFilterType {
+  _id: ObjectIdFilter
+  duplicate_incident_number: IntFilter
+  true_incident_number: IntFilter
+  OR: [DuplicateFilterType]
+  AND: [DuplicateFilterType]
+  NOR: [DuplicateFilterType]
+}
+
+input DuplicateSortType {
+  _id: SortType
+  duplicate_incident_number: SortType
+  true_incident_number: SortType
+}
+
+type Notification {
+  _id: ObjectId
+  incident_id: Int
+  report_number: Int
+  entity_id: String
+  isUpdate: Boolean
+  processed: Boolean
+  sentDate: DateTime
+  type: String
+  userId: User
+  created_at: DateTime
+}
+
+input NotificationFilterType {
+  _id: ObjectIdFilter
+  incident_id: IntFilter
+  report_number: IntFilter
+  entity_id: StringFilter
+  isUpdate: BooleanFilter
+  processed: BooleanFilter
+  sentDate: DateTimeFilter
+  type: StringFilter
+  userId: StringFilter
+  created_at: DateTimeFilter
+  OR: [NotificationFilterType]
+  AND: [NotificationFilterType]
+  NOR: [NotificationFilterType]
+}
+
+input NotificationSortType {
+  _id: SortType
+  incident_id: SortType
+  report_number: SortType
+  entity_id: SortType
+  isUpdate: SortType
+  processed: SortType
+  sentDate: SortType
+  type: SortType
+  created_at: SortType
+}
+
+type History_report {
+  _id: ObjectId
+  authors: [String]
+  cloudinary_id: String
+  created_at: DateTime
+  date_downloaded: DateTime!
+  date_modified: DateTime!
+  date_published: DateTime!
+  date_submitted: DateTime!
+  description: String
+  modifiedBy: String
+  editor_notes: String
+  embedding: ReportEmbedding
+  epoch_date_modified: Int
+  epoch_date_published: Int
+  epoch_date_submitted: Int
+  flag: Boolean
+  image_url: String
+  inputs_outputs: [String]
+  is_incident_report: Boolean
+  language: String
+  plain_text: String
+  report_number: Int
+  source_domain: String
+  snippet_max_characters: Int
+  submitters: [String]
+  tags: [String]
+  text: String
+  title: String
+  url: String
+  user: String
+  quiet: Boolean
+}
+
+input History_reportFilterType {
+  _id: ObjectIdFilter
+  authors: StringFilter
+  cloudinary_id: StringFilter
+  created_at: DateTimeFilter
+  date_downloaded: DateTimeFilter
+  date_modified: DateTimeFilter
+  date_published: DateTimeFilter
+  date_submitted: DateTimeFilter
+  description: StringFilter
+  modifiedBy: StringFilter
+  editor_notes: StringFilter
+  embedding: ReportEmbeddingObjectFilterType
+  epoch_date_modified: IntFilter
+  epoch_date_published: IntFilter
+  epoch_date_submitted: IntFilter
+  flag: BooleanFilter
+  image_url: StringFilter
+  inputs_outputs: StringFilter
+  is_incident_report: BooleanFilter
+  language: StringFilter
+  plain_text: StringFilter
+  report_number: IntFilter
+  source_domain: StringFilter
+  snippet_max_characters: IntFilter
+  submitters: StringFilter
+  tags: StringFilter
+  text: StringFilter
+  title: StringFilter
+  url: StringFilter
+  user: StringFilter
+  quiet: BooleanFilter
+  OR: [History_reportFilterType]
+  AND: [History_reportFilterType]
+  NOR: [History_reportFilterType]
+}
+
+input History_reportSortType {
+  _id: SortType
+  cloudinary_id: SortType
+  created_at: SortType
+  date_downloaded: SortType
+  date_modified: SortType
+  date_published: SortType
+  date_submitted: SortType
+  description: SortType
+  modifiedBy: SortType
+  editor_notes: SortType
+  embedding: ReportEmbeddingSortType
+  epoch_date_modified: SortType
+  epoch_date_published: SortType
+  epoch_date_submitted: SortType
+  flag: SortType
+  image_url: SortType
+  is_incident_report: SortType
+  language: SortType
+  plain_text: SortType
+  report_number: SortType
+  source_domain: SortType
+  snippet_max_characters: SortType
+  text: SortType
+  title: SortType
+  url: SortType
+  user: SortType
+  quiet: SortType
+}
+
+type History_incident {
+  _id: ObjectId
+  AllegedDeployerOfAISystem: [String]
+  AllegedDeveloperOfAISystem: [String]
+  AllegedHarmedOrNearlyHarmedParties: [String]
+  created_at: DateTime
+  implicated_systems: [String]
+  date: String!
+  description: String
+  modifiedBy: String
+  editor_dissimilar_incidents: [Int]
+  editor_notes: String
+  editor_similar_incidents: [Int]
+  editors: [String]!
+  embedding: IncidentEmbedding
+  date_modified: DateTime
+  flagged_dissimilar_incidents: [Int]
+  incident_id: Int!
+  nlp_similar_incidents: [IncidentNlp_similar_incident]
+  reports: [Int]!
+  title: String!
+  tsne: IncidentTsne
+}
+
+input History_incidentFilterType {
+  _id: ObjectIdFilter
+  created_at: DateTimeFilter
+  implicated_systems: StringFilter
+  date: StringFilter
+  description: StringFilter
+  modifiedBy: StringFilter
+  editor_dissimilar_incidents: IntFilter
+  editor_notes: StringFilter
+  editor_similar_incidents: IntFilter
+  editors: StringFilter
+  embedding: IncidentEmbeddingObjectFilterType
+  date_modified: DateTimeFilter
+  flagged_dissimilar_incidents: IntFilter
+  incident_id: IntFilter
+  nlp_similar_incidents: IncidentNlp_similar_incidentObjectFilterType
+  reports: IntFilter
+  title: StringFilter
+  tsne: IncidentTsneObjectFilterType
+  OR: [History_incidentFilterType]
+  AND: [History_incidentFilterType]
+  NOR: [History_incidentFilterType]
+}
+
+input History_incidentSortType {
+  _id: SortType
+  created_at: SortType
+  date: SortType
+  description: SortType
+  modifiedBy: SortType
+  editor_notes: SortType
+  embedding: IncidentEmbeddingSortType
+  date_modified: SortType
+  incident_id: SortType
+  title: SortType
+  tsne: IncidentTsneSortType
+}
+
+type Checklist {
+  _id: ObjectId
+  owner_id: String
+  tags_methods: [String]
+  tags_goals: [String]
+  tags_other: [String]
+  about: String
+  date_created: DateTime
+  date_updated: DateTime
+  risks: [Risks]
+  id: String
+  name: String
+}
+
+type Risks {
+  id: String
+  tag: String
+  tags: [String]
+  severity: String
+  title: String
+  risk_status: String
+  likelihood: String
+  touched: Boolean
+  risk_notes: String
+  precedents: [Precedents]
+}
+
+type Precedents {
+  id: String
+  title: String
+  description: String
+  incident_id: Int
+  tags: [String]
+}
+
+input ChecklistFilterType {
+  _id: ObjectIdFilter
+  owner_id: StringFilter
+  tags_methods: StringFilter
+  tags_goals: StringFilter
+  tags_other: StringFilter
+  about: StringFilter
+  date_created: DateTimeFilter
+  date_updated: DateTimeFilter
+  risks: RisksObjectFilterType
+  id: StringFilter
+  name: StringFilter
+  OR: [ChecklistFilterType]
+  AND: [ChecklistFilterType]
+  NOR: [ChecklistFilterType]
+}
+
+input RisksObjectFilterType {
+  id: StringFilter
+  tag: StringFilter
+  tags: StringFilter
+  severity: StringFilter
+  title: StringFilter
+  risk_status: StringFilter
+  likelihood: StringFilter
+  touched: BooleanFilter
+  risk_notes: StringFilter
+  precedents: PrecedentsObjectFilterType
+  opr: OprExists
+}
+
+input PrecedentsObjectFilterType {
+  id: StringFilter
+  title: StringFilter
+  description: StringFilter
+  incident_id: IntFilter
+  tags: StringFilter
+  opr: OprExists
+}
+
+input ChecklistSortType {
+  _id: SortType
+  owner_id: SortType
+  about: SortType
+  date_created: SortType
+  date_updated: SortType
+  id: SortType
+  name: SortType
+}
+
+input RisksInput {
+  tags: [String]
+}
+
+type EntityDuplicate {
+  _id: ObjectId
+  duplicate_entity_id: String!
+  true_entity_id: String!
+}
+
+input EntityDuplicateFilterType {
+  _id: ObjectIdFilter
+  duplicate_entity_id: StringFilter
+  true_entity_id: StringFilter
+  OR: [EntityDuplicateFilterType]
+  AND: [EntityDuplicateFilterType]
+  NOR: [EntityDuplicateFilterType]
+}
+
+input EntityDuplicateSortType {
+  _id: SortType
+  duplicate_entity_id: SortType
+  true_entity_id: SortType
+}
+
+type Mutation {
+  deleteOneQuickadd(filter: QuickaddFilterType, sort: QuickaddSortType, pagination: PaginationType): Quickadd
+  deleteManyQuickadds(filter: QuickaddFilterType, sort: QuickaddSortType, pagination: PaginationType): DeleteManyPayload
+  insertOneQuickadd(data: QuickaddInsertType!): Quickadd
+  insertManyQuickadds(data: [QuickaddInsertType]!): InsertManyPayload
+  updateOneQuickadd(filter: QuickaddFilterType!, update: QuickaddUpdateType!): Quickadd
+  updateManyQuickadds(filter: QuickaddFilterType!, update: QuickaddUpdateType!): UpdateManyPayload
+  upsertOneQuickadd(filter: QuickaddFilterType!, update: QuickaddInsertType!): Quickadd
+  deleteOneReport(filter: ReportFilterType, sort: ReportSortType, pagination: PaginationType): Report
+  insertOneReport(data: ReportInsertType!): Report
+  updateOneReport(filter: ReportFilterType!, update: ReportUpdateType!): Report
+  flagReport(report_number: Int!, input: Boolean!): Report
+  updateOneReportTranslation(input: UpdateOneReportTranslationInput!): Report
+  createVariant(input: CreateVariantInput!): CreateVariantPayload
+  insertOneIncident(data: IncidentInsertType!): Incident
+  updateOneIncident(filter: IncidentFilterType!, update: IncidentUpdateType!): Incident
+  updateManyIncidents(filter: IncidentFilterType!, update: IncidentUpdateType!): UpdateManyPayload
+  linkReportsToIncidents(input: LinkReportsToIncidentsInput!): [Incident]
+  flagIncidentSimilarity(incidentId: Int!, dissimilarIds: [Int!]): Incident
+  updateOneIncidentTranslation(input: UpdateOneIncidentTranslationInput!): Incident
+  updateOneEntity(filter: EntityFilterType!, update: EntityUpdateType!): Entity
+  upsertOneEntity(filter: EntityFilterType!, update: EntityInsertType!): Entity
+  updateEntityAndRelationships(input: UpdateOneEntityInput!): UpdateOneEntityPayload!
+  mergeEntities(primaryId: String!, secondaryId: String!, keepEntity: Int!): Entity!
+  updateOneUser(filter: UserFilterType!, update: UserUpdateType!): User
+  deleteOneSubmission(filter: SubmissionFilterType, sort: SubmissionSortType, pagination: PaginationType): Submission
+  insertOneSubmission(data: SubmissionInsertType!): Submission
+  updateOneSubmission(filter: SubmissionFilterType!, update: SubmissionUpdateType!): Submission
+  promoteSubmissionToReport(input: PromoteSubmissionToReportInput!): PromoteSubmissionToReportPayload!
+  deleteOneEntity_relationship(filter: Entity_relationshipFilterType, sort: Entity_relationshipSortType, pagination: PaginationType): Entity_relationship
+  updateOneEntity_relationship(filter: Entity_relationshipFilterType!, update: Entity_relationshipUpdateType!): Entity_relationship
+  upsertOneEntity_relationship(filter: Entity_relationshipFilterType!, update: Entity_relationshipInsertType!): Entity_relationship
+  upsertOneClassification(filter: ClassificationFilterType!, update: ClassificationInsertType!): Classification
+  deleteOneCandidate(filter: CandidateFilterType, sort: CandidateSortType, pagination: PaginationType): Candidate
+  deleteManyCandidates(filter: CandidateFilterType, sort: CandidateSortType, pagination: PaginationType): DeleteManyPayload
+  insertOneCandidate(data: CandidateInsertType!): Candidate
+  insertManyCandidates(data: [CandidateInsertType]!): InsertManyPayload
+  updateOneCandidate(filter: CandidateFilterType!, update: CandidateUpdateType!): Candidate
+  updateManyCandidates(filter: CandidateFilterType!, update: CandidateUpdateType!): UpdateManyPayload
+  upsertOneCandidate(filter: CandidateFilterType!, update: CandidateInsertType!): Candidate
+  deleteOneSubscription(filter: SubscriptionFilterType, sort: SubscriptionSortType, pagination: PaginationType): Subscription
+  deleteManySubscriptions(filter: SubscriptionFilterType, sort: SubscriptionSortType, pagination: PaginationType): DeleteManyPayload
+  updateOneSubscription(filter: SubscriptionFilterType!, update: SubscriptionUpdateType!): Subscription
+  upsertOneSubscription(filter: SubscriptionFilterType!, update: SubscriptionInsertType!): Subscription
+  deleteOneDuplicate(filter: DuplicateFilterType, sort: DuplicateSortType, pagination: PaginationType): Duplicate
+  deleteManyDuplicates(filter: DuplicateFilterType, sort: DuplicateSortType, pagination: PaginationType): DeleteManyPayload
+  insertOneDuplicate(data: DuplicateInsertType!): Duplicate
+  insertManyDuplicates(data: [DuplicateInsertType]!): InsertManyPayload
+  updateOneDuplicate(filter: DuplicateFilterType!, update: DuplicateUpdateType!): Duplicate
+  updateManyDuplicates(filter: DuplicateFilterType!, update: DuplicateUpdateType!): UpdateManyPayload
+  upsertOneDuplicate(filter: DuplicateFilterType!, update: DuplicateInsertType!): Duplicate
+  deleteOneChecklist(filter: ChecklistFilterType, sort: ChecklistSortType, pagination: PaginationType): Checklist
+  insertOneChecklist(data: ChecklistInsertType!): Checklist
+  upsertOneChecklist(filter: ChecklistFilterType!, update: ChecklistInsertType!): Checklist
+}
+
+type DeleteManyPayload {
+  deletedCount: Int!
+}
+
+input QuickaddInsertType {
+  _id: ObjectId
+  date_submitted: String!
+  incident_id: Int
+  source_domain: String
+  url: String!
+}
+
+type InsertManyPayload {
+  insertedIds: [ObjectId]!
+}
+
+input QuickaddUpdateType {
+  set: QuickaddSetType
+}
+
+input QuickaddSetType {
+  _id: ObjectId
+  date_submitted: String
+  incident_id: Int
+  source_domain: String
+  url: String
+}
+
+type UpdateManyPayload {
+  modifiedCount: Int!
+  matchedCount: Int!
+}
+
+input ReportInsertType {
+  _id: ObjectId
+  authors: [String]!
+  cloudinary_id: String!
+  created_at: DateTime
+  date_downloaded: DateTime!
+  date_modified: DateTime!
+  date_published: DateTime!
+  date_submitted: DateTime!
+  description: String
+  editor_notes: String
+  embedding: ReportEmbeddingInsertType
+  epoch_date_published: Int!
+  epoch_date_submitted: Int!
+  flag: Boolean
+  image_url: String!
+  inputs_outputs: [String]
+  is_incident_report: Boolean
+  language: String!
+  plain_text: String!
+  report_number: Int!
+  source_domain: String!
+  snippet_max_characters: Int
+  submitters: [String]!
+  tags: [String]!
+  text: String!
+  title: String!
+  url: String!
+  quiet: Boolean
+  user: ReportUserRelationInput
+}
+
+input ReportEmbeddingInsertType {
+  from_text_hash: String
+  vector: [Float]
+}
+
+input ReportUserRelationInput {
+  link: String
+}
+
+input ReportUpdateType {
+  set: ReportSetType
+}
+
+input ReportSetType {
+  _id: ObjectId
+  authors: [String]
+  cloudinary_id: String
+  created_at: DateTime
+  date_downloaded: DateTime
+  date_modified: DateTime
+  date_published: DateTime
+  date_submitted: DateTime
+  description: String
+  editor_notes: String
+  embedding: ReportEmbeddingSetObjectType
+  epoch_date_published: Int
+  epoch_date_submitted: Int
+  flag: Boolean
+  image_url: String
+  inputs_outputs: [String]
+  is_incident_report: Boolean
+  language: String
+  plain_text: String
+  report_number: Int
+  source_domain: String
+  snippet_max_characters: Int
+  submitters: [String]
+  tags: [String]
+  text: String
+  title: String
+  url: String
+  quiet: Boolean
+  user: ReportUserRelationInput
+}
+
+input ReportEmbeddingSetObjectType {
+  from_text_hash: String
+  vector: [Float]
+
+  """
+  If set to true, the object would be overwriten entirely, including fields that are not specified. Non-null validation rules will apply. Once set to true, any child object will overwriten invariably of the value set to this field.
+  """
+  _OVERWRITE: Boolean
+}
+
+input UpdateOneReportTranslationInput {
+  language: String!
+  plain_text: String!
+  report_number: Int!
+  text: String!
+  title: String!
+  dirty: Boolean
+}
+
+type CreateVariantPayload {
+  """The unique identifier for the incident."""
+  incident_id: Int!
+
+  """The unique report number associated with the incident."""
+  report_number: Int!
+}
+
+"""
+Input type for creating a variant, including incident ID and variant details.
+"""
+input CreateVariantInput {
+  """The unique identifier for the incident."""
+  incidentId: Int!
+
+  """Details about the variant."""
+  variant: CreateVariantInputVariant
+}
+
+"""
+Input details for the variant, including publication date, inputs/outputs, submitters, and text.
+"""
+input CreateVariantInputVariant {
+  """The date when the variant was published."""
+  date_published: String
+
+  """List of inputs and outputs related to the variant."""
+  inputs_outputs: [String]
+
+  """List of submitters associated with the variant."""
+  submitters: [String]
+
+  """The textual content of the variant."""
+  text: String
+}
+
+input IncidentInsertType {
+  _id: ObjectId
+  date: String!
+  description: String
+  editor_notes: String!
+  date_modified: DateTime
+  incident_id: Int!
+  title: String!
+  editor_dissimilar_incidents: [Int]
+  editor_similar_incidents: [Int]
+  embedding: IncidentEmbeddingInsertType
+  flagged_dissimilar_incidents: [Int]!
+  nlp_similar_incidents: [IncidentNlp_similar_incidentInsertType]
+  tsne: IncidentTsneInsertType
+  created_at: DateTime
+  AllegedDeployerOfAISystem: IncidentAllegeddeployerofaisystemRelationInput
+  AllegedDeveloperOfAISystem: IncidentAllegeddeveloperofaisystemRelationInput
+  AllegedHarmedOrNearlyHarmedParties: IncidentAllegedharmedornearlyharmedpartiesRelationInput
+  implicated_systems: IncidentImplicated_systemsRelationInput
+  editors: IncidentEditorsRelationInput
+  reports: IncidentReportsRelationInput
+}
+
+input IncidentEmbeddingInsertType {
+  from_reports: [Int]
+  vector: [Float]
+}
+
+input IncidentNlp_similar_incidentInsertType {
+  incident_id: Int
+  similarity: Float
+}
+
+input IncidentTsneInsertType {
+  x: Float
+  y: Float
+}
+
+input IncidentAllegeddeployerofaisystemRelationInput {
+  link: [String]!
+}
+
+input IncidentAllegeddeveloperofaisystemRelationInput {
+  link: [String]!
+}
+
+input IncidentAllegedharmedornearlyharmedpartiesRelationInput {
+  link: [String]!
+}
+
+input IncidentImplicated_systemsRelationInput {
+  link: [String]!
+}
+
+input IncidentEditorsRelationInput {
+  link: [String]!
+}
+
+input IncidentReportsRelationInput {
+  link: [Int]!
+}
+
+input IncidentUpdateType {
+  set: IncidentSetType
+}
+
+input IncidentSetType {
+  _id: ObjectId
+  date: String
+  description: String
+  editor_notes: String
+  date_modified: DateTime
+  incident_id: Int
+  title: String
+  editor_dissimilar_incidents: [Int]
+  editor_similar_incidents: [Int]
+  embedding: IncidentEmbeddingSetObjectType
+  flagged_dissimilar_incidents: [Int]
+  nlp_similar_incidents: [IncidentNlp_similar_incidentSetListObjectType]
+  tsne: IncidentTsneSetObjectType
+  created_at: DateTime
+  AllegedDeployerOfAISystem: IncidentAllegeddeployerofaisystemRelationInput
+  AllegedDeveloperOfAISystem: IncidentAllegeddeveloperofaisystemRelationInput
+  AllegedHarmedOrNearlyHarmedParties: IncidentAllegedharmedornearlyharmedpartiesRelationInput
+  implicated_systems: IncidentImplicated_systemsRelationInput
+  editors: IncidentEditorsRelationInput
+  reports: IncidentReportsRelationInput
+}
+
+input IncidentEmbeddingSetObjectType {
+  from_reports: [Int]
+  vector: [Float]
+
+  """
+  If set to true, the object would be overwriten entirely, including fields that are not specified. Non-null validation rules will apply. Once set to true, any child object will overwriten invariably of the value set to this field.
+  """
+  _OVERWRITE: Boolean
+}
+
+input IncidentNlp_similar_incidentSetListObjectType {
+  incident_id: Int
+  similarity: Float
+}
+
+input IncidentTsneSetObjectType {
+  x: Float
+  y: Float
+
+  """
+  If set to true, the object would be overwriten entirely, including fields that are not specified. Non-null validation rules will apply. Once set to true, any child object will overwriten invariably of the value set to this field.
+  """
+  _OVERWRITE: Boolean
+}
+
+input LinkReportsToIncidentsInput {
+  incident_ids: [Int!]
+  report_numbers: [Int!]
+}
+
+input UpdateOneIncidentTranslationInput {
+  language: String!
+  incident_id: Int!
+  title: String!
+  description: String!
+  dirty: Boolean
+}
+
+input EntityUpdateType {
+  set: EntitySetType
+}
+
+input EntitySetType {
+  _id: ObjectId
+  entity_id: String
+  name: String
+  created_at: DateTime
+  date_modified: DateTime
+}
+
+input EntityInsertType {
+  _id: ObjectId
+  entity_id: String!
+  name: String!
+  created_at: DateTime
+  date_modified: DateTime
+}
+
+type UpdateOneEntityPayload {
+  created_at: DateTime
+  date_modified: DateTime
+  entity_id: String!
+  name: String!
+  entity_relationships_to_add: [String]
+  entity_relationships_to_remove: [String]
+}
+
+input UpdateOneEntityInput {
+  created_at: DateTime
+  date_modified: DateTime
+  entity_id: String!
+  name: String!
+  entity_relationships_to_add: [JSONObject]
+  entity_relationships_to_remove: [JSONObject]
+}
+
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject
+
+input UserUpdateType {
+  set: UserSetType
+}
+
+input UserSetType {
+  _id: ObjectId
+  first_name: String
+  last_name: String
+  roles: [String]
+  userId: String
+}
+
+input SubmissionInsertType {
+  _id: ObjectId
+  authors: [String]!
+  cloudinary_id: String
+  date_downloaded: String!
+  date_modified: String!
+  date_published: String!
+  date_submitted: String!
+  description: String
+  editor_dissimilar_incidents: [Int]
+  editor_notes: String
+  editor_similar_incidents: [Int]
+  embedding: EmbeddingInsertType
+  epoch_date_modified: Long
+  image_url: String!
+  incident_date: String
+  incident_ids: [Int]
+  incident_title: String
+  language: String!
+  nlp_similar_incidents: [IncidentNlp_similar_incidentInsertType]
+  plain_text: String
+  source_domain: String!
+  submitters: [String]!
+  tags: [String]!
+  text: String!
+  title: String!
+  url: String!
+  status: String
+  snippet_max_characters: Int
+  quiet: Boolean
+  deployers: SubmissionDeployersRelationInput
+  developers: SubmissionDevelopersRelationInput
+  harmed_parties: SubmissionHarmed_partiesRelationInput
+  incident_editors: SubmissionIncident_editorsRelationInput
+  user: SubmissionUserRelationInput
+  implicated_systems: SubmissionImplicated_systemsRelationInput
+}
+
+input EmbeddingInsertType {
+  from_text_hash: String
+  vector: [Float]
+}
+
+input SubmissionDeployersRelationInput {
+  link: [String]!
+}
+
+input SubmissionDevelopersRelationInput {
+  link: [String]!
+}
+
+input SubmissionHarmed_partiesRelationInput {
+  link: [String]!
+}
+
+input SubmissionIncident_editorsRelationInput {
+  link: [String]!
+}
+
+input SubmissionUserRelationInput {
+  link: String
+}
+
+input SubmissionImplicated_systemsRelationInput {
+  link: [String]!
+}
+
+input SubmissionUpdateType {
+  set: SubmissionSetType
+}
+
+input SubmissionSetType {
+  _id: ObjectId
+  authors: [String]
+  cloudinary_id: String
+  date_downloaded: String
+  date_modified: String
+  date_published: String
+  date_submitted: String
+  description: String
+  editor_dissimilar_incidents: [Int]
+  editor_notes: String
+  editor_similar_incidents: [Int]
+  embedding: EmbeddingSetObjectType
+  epoch_date_modified: Long
+  image_url: String
+  incident_date: String
+  incident_ids: [Int]
+  incident_title: String
+  language: String
+  nlp_similar_incidents: [IncidentNlp_similar_incidentSetListObjectType]
+  plain_text: String
+  source_domain: String
+  submitters: [String]
+  tags: [String]
+  text: String
+  title: String
+  url: String
+  status: String
+  snippet_max_characters: Int
+  quiet: Boolean
+  deployers: SubmissionDeployersRelationInput
+  developers: SubmissionDevelopersRelationInput
+  harmed_parties: SubmissionHarmed_partiesRelationInput
+  incident_editors: SubmissionIncident_editorsRelationInput
+  user: SubmissionUserRelationInput
+  implicated_systems: SubmissionImplicated_systemsRelationInput
+}
+
+input EmbeddingSetObjectType {
+  from_text_hash: String
+  vector: [Float]
+
+  """
+  If set to true, the object would be overwriten entirely, including fields that are not specified. Non-null validation rules will apply. Once set to true, any child object will overwriten invariably of the value set to this field.
+  """
+  _OVERWRITE: Boolean
+}
+
+type PromoteSubmissionToReportPayload {
+  incident_ids: [Int]
+  report_number: Int
+}
+
+input PromoteSubmissionToReportInput {
+  incident_ids: [Int]!
+  is_incident_report: Boolean
+  submission_id: ObjectId!
+}
+
+input Entity_relationshipUpdateType {
+  set: Entity_relationshipSetType
+}
+
+input Entity_relationshipSetType {
+  _id: ObjectId
+  pred: String
+  is_symmetric: Boolean
+  created_at: DateTime
+  obj: Entity_relationshipObjRelationInput
+  sub: Entity_relationshipSubRelationInput
+}
+
+input Entity_relationshipObjRelationInput {
+  link: String
+}
+
+input Entity_relationshipSubRelationInput {
+  link: String
+}
+
+input Entity_relationshipInsertType {
+  _id: ObjectId
+  pred: String
+  is_symmetric: Boolean
+  created_at: DateTime
+  obj: Entity_relationshipObjRelationInput
+  sub: Entity_relationshipSubRelationInput
+}
+
+input ClassificationInsertType {
+  _id: ObjectId
+  attributes: [AttributeInsertType]
+  namespace: String!
+  notes: String
+  publish: Boolean
+  incidents: ClassificationIncidentsRelationInput
+  reports: ClassificationReportsRelationInput
+}
+
+input AttributeInsertType {
+  short_name: String
+  value_json: String
+}
+
+input ClassificationIncidentsRelationInput {
+  link: [Int]!
+}
+
+input ClassificationReportsRelationInput {
+  link: [Int]!
+}
+
+input CandidateInsertType {
+  _id: ObjectId
+  title: String!
+  date_published: String!
+  matching_keywords: [String]
+  matching_harm_keywords: [String]
+  matching_entities: [String]
+  embedding: CandidateEmbeddingInsertType
+  similarity: Float
+  match: Boolean
+  created_at: DateTime
+  url: String!
+  dismissed: Boolean
+  text: String
+  plain_text: String
+}
+
+input CandidateEmbeddingInsertType {
+  vector: [Int]
+  source: String
+}
+
+input CandidateUpdateType {
+  set: CandidateSetType
+}
+
+input CandidateSetType {
+  _id: ObjectId
+  title: String
+  date_published: String
+  matching_keywords: [String]
+  matching_harm_keywords: [String]
+  matching_entities: [String]
+  embedding: CandidateEmbeddingSetObjectType
+  similarity: Float
+  match: Boolean
+  created_at: DateTime
+  url: String
+  dismissed: Boolean
+  text: String
+  plain_text: String
+}
+
+input CandidateEmbeddingSetObjectType {
+  vector: [Int]
+  source: String
+
+  """
+  If set to true, the object would be overwriten entirely, including fields that are not specified. Non-null validation rules will apply. Once set to true, any child object will overwriten invariably of the value set to this field.
+  """
+  _OVERWRITE: Boolean
+}
+
+input SubscriptionUpdateType {
+  set: SubscriptionSetType
+}
+
+input SubscriptionSetType {
+  _id: ObjectId
+  type: String
+  entityId: SubscriptionEntityidRelationInput
+  incident_id: SubscriptionIncident_idRelationInput
+  userId: SubscriptionUseridRelationInput
+}
+
+input SubscriptionEntityidRelationInput {
+  link: String
+}
+
+input SubscriptionIncident_idRelationInput {
+  link: Int
+}
+
+input SubscriptionUseridRelationInput {
+  link: String
+}
+
+input SubscriptionInsertType {
+  _id: ObjectId
+  type: String!
+  entityId: SubscriptionEntityidRelationInput
+  incident_id: SubscriptionIncident_idRelationInput
+  userId: SubscriptionUseridRelationInput
+}
+
+input DuplicateInsertType {
+  _id: ObjectId
+  duplicate_incident_number: Int
+  true_incident_number: Int
+}
+
+input DuplicateUpdateType {
+  set: DuplicateSetType
+}
+
+input DuplicateSetType {
+  _id: ObjectId
+  duplicate_incident_number: Int
+  true_incident_number: Int
+}
+
+input ChecklistInsertType {
+  _id: ObjectId
+  owner_id: String
+  tags_methods: [String]
+  tags_goals: [String]
+  tags_other: [String]
+  about: String
+  date_created: DateTime
+  date_updated: DateTime
+  risks: [RisksInsertType]
+  id: String
+  name: String
+}
+
+input RisksInsertType {
+  id: String
+  tag: String
+  tags: [String]
+  severity: String
+  title: String
+  risk_status: String
+  likelihood: String
+  touched: Boolean
+  risk_notes: String
+  precedents: [PrecedentsInsertType]
+}
+
+input PrecedentsInsertType {
+  id: String
+  title: String
+  description: String
+  incident_id: Int
+  tags: [String]
+}

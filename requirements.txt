@@ -10,6 +10,7 @@ sentence-transformers
 
 # Database
 pymongo
+python-dotenv
 
 # Data processing and forecasting
 numpy
