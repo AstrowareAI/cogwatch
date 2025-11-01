@@ -1,0 +1,30 @@
+# Core crawling and web scraping
+crawl4ai
+
+# LLM and AI APIs
+openai
+
+# Vector embeddings
+sentence-transformers
+
+# Database
+pymongo
+
+# Data processing and forecasting
+numpy
+pandas
+scikit-learn
+html5lib
+lxml
+torch
+
+# Dashboard
+streamlit
+
+# Additional utilities mentioned in project plan
+pytrends
+arxiv
+
+# Optional: for async operations (though asyncio is built-in)
+aiohttp
+
