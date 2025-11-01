@@ -1,5 +1,6 @@
 # Core crawling and web scraping
 crawl4ai
+beautifulsoup4
 
 # LLM and AI APIs
 openai
