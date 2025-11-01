@@ -23,7 +23,7 @@ class IncidentDBSync:
         self.incident_db_url = "https://incidentdatabase.ai/api/graphql"
         self.collection = get_collection(collection_name)
     
-    # ============ GraphQL API Methods (embedded scraper functionality) ============
+    # ============ GraphQL API Methods (embedded data collector functionality) ============
     
     async def execute_query(self, query: str) -> Optional[Dict]:
         """
@@ -294,7 +294,7 @@ class IncidentDBSync:
     
     async def fetch_recent_from_api(self, limit: int = 100) -> Dict:
         """
-        Fetch recent incidents from API (helper method for harm_scraper)
+        Fetch recent incidents from API (helper method for harm_data_collector)
         
         Args:
             limit: Maximum number of incidents to fetch
@@ -404,7 +404,7 @@ class IncidentDBSync:
         Prepare incident document for MongoDB storage
         
         Args:
-            incident: Raw incident dictionary from scraper
+            incident: Raw incident dictionary from data collector
             
         Returns:
             Document ready for MongoDB insertion

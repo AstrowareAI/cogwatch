@@ -1,6 +1,6 @@
 """
-SpiralBench Scraper for Cogwatch
-Scrapes Spiral-Bench leaderboard data for safety scores and metrics
+SpiralBench Data Collector for Cogwatch
+Collects Spiral-Bench leaderboard data for safety scores and metrics
 """
 
 from datetime import datetime, timezone
@@ -14,8 +14,8 @@ import csv
 import io
 
 
-class SpiralBenchScraper:
-    """Scraper for Spiral-Bench leaderboard data"""
+class SpiralBenchDataCollector:
+    """Data collector for Spiral-Bench leaderboard data"""
     
     def __init__(self):
         self.spiral_bench_url = "https://eqbench.com/spiral-bench.html"

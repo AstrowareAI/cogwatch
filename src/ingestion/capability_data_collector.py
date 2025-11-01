@@ -1,5 +1,5 @@
 """
-Capability Data Scraper for Cogwatch
+Capability Data Collector for Cogwatch
 Fetches LLM benchmark scores from llm-stats.com API (MMLU, GPQA, MATH, Human Eval, etc.)
 Also fetches EQ-Bench data: Emotional Intelligence, Creative Writing, Judgemark, BuzzBench
 """
@@ -15,8 +15,8 @@ import csv
 import io
 
 
-class CapabilityScraper:
-    """Scraper for LLM capability benchmark data from llm-stats.com API"""
+class CapabilityDataCollector:
+    """Data collector for LLM capability benchmark data from llm-stats.com API"""
     
     # Key benchmarks we're interested in (mapped to API field names)
     BENCHMARK_MAPPING = {
@@ -1023,9 +1023,9 @@ def _print_benchmark_stats(benchmark_name: str, data: Dict, indent: str = "  "):
 
 
 async def main():
-    """Test the scraper"""
-    scraper = CapabilityScraper()
-    result = await scraper.scrape()
+    """Test the data collector"""
+    collector = CapabilityDataCollector()
+    result = await collector.scrape()
     
     print("\n" + "="*60)
     print("CAPABILITY BENCHMARK SUMMARY")

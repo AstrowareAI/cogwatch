@@ -1,21 +1,21 @@
 """
-Harm/Misalignment Data Scraper Coordinator for Cogwatch
-Coordinates SpiralBench and AI Incident Database scrapers
+Harm/Misalignment Data Collector Coordinator for Cogwatch
+Coordinates SpiralBench and AI Incident Database data collectors
 """
 
 import asyncio
 from datetime import datetime, timezone
 from typing import Dict
 
-from .spiralbench_scraper import SpiralBenchScraper
+from .spiralbench_data_collector import SpiralBenchDataCollector
 from .incidentdb_sync import IncidentDBSync
 
 
-class HarmScraper:
+class HarmDataCollector:
     """Coordinator for harm/misalignment data from Spiral-Bench and AI Incident DB"""
     
     def __init__(self):
-        self.spiral_bench_scraper = SpiralBenchScraper()
+        self.spiral_bench_data_collector = SpiralBenchDataCollector()
         self.incident_db_sync = IncidentDBSync()
     
     async def scrape(self) -> Dict:
@@ -23,7 +23,7 @@ class HarmScraper:
         Main scraping method - fetches both Spiral-Bench and AI Incident DB data
         
         Returns:
-            Dictionary with results from both scrapers
+            Dictionary with results from both data collectors
         """
         results = {
             'timestamp': datetime.now(timezone.utc).isoformat(),
@@ -31,8 +31,8 @@ class HarmScraper:
             'incident_db': {}
         }
         
-        # Scrape Spiral-Bench
-        spiral_results = await self.spiral_bench_scraper.scrape()
+        # Collect Spiral-Bench data
+        spiral_results = await self.spiral_bench_data_collector.scrape()
         results['spiral_bench'] = spiral_results
         
         # Fetch AI Incident DB data from API (using sync's API methods)
@@ -56,9 +56,9 @@ class HarmScraper:
 
 
 async def main():
-    """Test the harm scraper"""
-    scraper = HarmScraper()
-    result = await scraper.scrape()
+    """Test the harm data collector"""
+    collector = HarmDataCollector()
+    result = await collector.scrape()
     
     print("\n" + "="*50)
     print("HARM/MISALIGNMENT DATA SUMMARY")

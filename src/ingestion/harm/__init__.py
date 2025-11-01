@@ -1,11 +1,15 @@
 """
-Harm/Misalignment Data Scrapers Module
-Contains separate scrapers for SpiralBench and AI Incident Database
+Harm/Misalignment Data Collectors Module
+Contains separate data collectors for SpiralBench and AI Incident Database
 """
 
-from .spiralbench_scraper import SpiralBenchScraper
+from .spiralbench_data_collector import SpiralBenchDataCollector
 from .incidentdb_sync import IncidentDBSync
-from .harm_scraper import HarmScraper
+from .harm_data_collector import HarmDataCollector
 
-__all__ = ['SpiralBenchScraper', 'IncidentDBSync', 'HarmScraper']
+# Keep old names as aliases for backward compatibility
+SpiralBenchScraper = SpiralBenchDataCollector
+HarmScraper = HarmDataCollector
+
+__all__ = ['SpiralBenchDataCollector', 'IncidentDBSync', 'HarmDataCollector', 'SpiralBenchScraper', 'HarmScraper']
 
