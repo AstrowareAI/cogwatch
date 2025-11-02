@@ -490,6 +490,97 @@ class CognitiveDebtModel:
 # VISUALIZATION
 # ============================================================================
 
+def create_simple_forecast_chart(model):
+    """Create clean, simple chart showing ONLY Current Rates - for general audiences"""
+
+    # Run only current rates scenario
+    df = model.run_scenario('current')
+
+    # Create figure - 2 charts side by side
+    fig = plt.figure(figsize=(18, 8))
+
+    # CHART 1: Cognitive Index
+    ax1 = plt.subplot(1, 2, 1)
+
+    ax1.plot(df['year'], df['cognitive_index'],
+             linewidth=4, marker='o', color='darkblue',
+             label='Projected Cognitive Index', markersize=6)
+
+    # Risk zones
+    ax1.axhline(y=95, color='orange', linestyle='--', linewidth=2, alpha=0.7, label='WARNING (95)')
+    ax1.axhline(y=92, color='red', linestyle='--', linewidth=2, alpha=0.7, label='DANGER (92)')
+    ax1.axhline(y=88, color='purple', linestyle='--', linewidth=1.5, alpha=0.7, label='CRITICAL (88)')
+
+    ax1.fill_between([2020, 2035], 95, 100, alpha=0.1, color='yellow')
+    ax1.fill_between([2020, 2035], 92, 95, alpha=0.1, color='orange')
+    ax1.fill_between([2020, 2035], 88, 92, alpha=0.1, color='red')
+    ax1.fill_between([2020, 2035], 84, 88, alpha=0.08, color='darkred')
+
+    # Mark ChatGPT launch
+    ax1.axvline(x=2022, color='gray', linestyle=':', linewidth=2, alpha=0.5)
+    ax1.text(2022, 79, 'ChatGPT\nLaunch', fontsize=10, ha='center', alpha=0.6)
+
+    # Highlight key years
+    for year in [2027, 2030]:
+        idx_val = df[df['year'] == year]['cognitive_index'].iloc[0]
+        ax1.scatter([year], [idx_val], s=200, color='red', zorder=5, edgecolors='white', linewidths=2)
+        ax1.text(year, idx_val + 1, f'{year}\n{idx_val:.1f}',
+                ha='center', fontsize=9, fontweight='bold',
+                bbox=dict(boxstyle='round', facecolor='yellow', alpha=0.7))
+
+    ax1.set_xlabel('Year', fontsize=14, fontweight='bold')
+    ax1.set_ylabel('Cognitive Index (2012=100)', fontsize=14, fontweight='bold')
+    ax1.set_title('Humanity Cognitive Index - Current Rates Projection', fontsize=16, fontweight='bold')
+    ax1.legend(loc='upper right', fontsize=11)
+    ax1.grid(True, alpha=0.3)
+    ax1.set_xlim(2020, 2035)
+    ax1.set_ylim(78, 100)
+
+    # CHART 2: Cognitive Debt
+    ax2 = plt.subplot(1, 2, 2)
+
+    ax2.plot(df['year'], df['cognitive_debt'],
+             linewidth=4, marker='o', color='darkred',
+             label='Projected Cognitive Debt', markersize=6)
+
+    # Risk zones (inverted)
+    ax2.axhline(y=5, color='orange', linestyle='--', linewidth=2, alpha=0.7, label='WARNING (5)')
+    ax2.axhline(y=8, color='red', linestyle='--', linewidth=2, alpha=0.7, label='DANGER (8)')
+    ax2.axhline(y=12, color='purple', linestyle='--', linewidth=1.5, alpha=0.7, label='CRITICAL (12)')
+
+    ax2.fill_between([2020, 2035], 0, 5, alpha=0.1, color='yellow')
+    ax2.fill_between([2020, 2035], 5, 8, alpha=0.1, color='orange')
+    ax2.fill_between([2020, 2035], 8, 12, alpha=0.1, color='red')
+    ax2.fill_between([2020, 2035], 12, 25, alpha=0.08, color='darkred')
+
+    # Mark ChatGPT launch
+    ax2.axvline(x=2022, color='gray', linestyle=':', linewidth=2, alpha=0.5)
+    ax2.text(2022, 2, 'ChatGPT\nLaunch', fontsize=10, ha='center', alpha=0.6)
+
+    # Highlight key years
+    for year in [2027, 2030]:
+        debt_val = df[df['year'] == year]['cognitive_debt'].iloc[0]
+        ax2.scatter([year], [debt_val], s=200, color='red', zorder=5, edgecolors='white', linewidths=2)
+        ax2.text(year, debt_val + 1.5, f'{year}\n{debt_val:.1f}',
+                ha='center', fontsize=9, fontweight='bold',
+                bbox=dict(boxstyle='round', facecolor='yellow', alpha=0.7))
+
+    ax2.set_xlabel('Year', fontsize=14, fontweight='bold')
+    ax2.set_ylabel('Cognitive Debt (points)', fontsize=14, fontweight='bold')
+    ax2.set_title('Humanity Cognitive Debt - Current Rates Projection', fontsize=16, fontweight='bold')
+    ax2.legend(loc='upper left', fontsize=11)
+    ax2.grid(True, alpha=0.3)
+    ax2.set_xlim(2020, 2035)
+    ax2.set_ylim(0, 25)
+
+    plt.tight_layout(pad=2.0)
+    plt.savefig('/Users/preethamsathyamurthy/Github/Astroware/cogwatch/src/results/forecast_current_rates_only.png',
+                dpi=300, bbox_inches='tight')
+    print("✓ Saved simple forecast (current rates only)")
+
+    return df
+
+
 def create_forecast_charts(model):
     """Create focused forecast visualizations - 2 charts only"""
 
@@ -795,13 +886,16 @@ def main():
         print(f"  2030: Index={row_2030['cognitive_index']:.2f}, Capability={row_2030['capability']:.2f}, Users@Risk={row_2030['users_at_risk_millions']:.0f}M")
 
     # Create visualizations
-    print("\n[3/5] Creating base scenario visualizations...")
+    print("\n[3/6] Creating simple forecast (current rates only)...")
+    create_simple_forecast_chart(model)
+
+    print("\n[4/6] Creating comprehensive scenario visualizations...")
     create_forecast_charts(model)
 
-    print("\n[4/5] Creating uncertainty visualizations...")
+    print("\n[5/6] Creating uncertainty visualizations...")
     create_uncertainty_visualization(model)
 
-    print("\n[5/5] Creating scenario comparison...")
+    print("\n[6/6] Creating scenario comparison...")
     create_scenario_comparison_chart(model)
 
     # Save data
@@ -816,9 +910,10 @@ def main():
 
     print("\n✓ Complete!")
     print("\nGenerated files:")
-    print("  - cognitive_debt_forecast_final.png (base scenarios)")
-    print("  - forecast_uncertainty_bands.png (NEW: uncertainty quantification)")
-    print("  - scenario_comparison_all.png (NEW: all scenarios)")
+    print("  - forecast_current_rates_only.png (NEW: simple chart for general audiences)")
+    print("  - cognitive_debt_forecast_final.png (comprehensive scenarios)")
+    print("  - forecast_uncertainty_bands.png (uncertainty quantification)")
+    print("  - scenario_comparison_all.png (all scenarios compared)")
     print("  - forecast_scenarios.csv")
     print("  - individual_timeline.csv")
     print("=" * 80)
