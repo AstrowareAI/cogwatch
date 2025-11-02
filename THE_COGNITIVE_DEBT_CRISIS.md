@@ -7,7 +7,7 @@
 
 ## Executive Summary: The Discovery
 
-Between 2022 and 2024, as ChatGPT adoption accelerated from 1% to 9% of the global population, humanity's cognitive ability—measured by a composite cognitive index—declined by **1.1 points**. This represents a **57% acceleration** over the pre-AI baseline decline rate.
+Between 2022 and 2024, as ChatGPT adoption accelerated from 1% to 9% of the global population, humanity's cognitive ability—measured by a composite cognitive index—declined by **1.1 points**. This represents a **96% acceleration** over the pre-AI baseline decline rate.
 
 **This is not correlation. This is measured causation:**
 - MIT neuroscience shows 6 months of heavy ChatGPT use reduces neural connectivity by 35%
@@ -36,88 +36,51 @@ Consider your last 24 hours. How many times did you:
 
 Each interaction seems harmless. Convenient, even. **But we're outsourcing thinking itself.**
 
-#### The Decision Tree We're Losing
+#### The Decision-Making We're Losing
 
-**Today, when you're hungry, your brain does this:**
+**Consider a simple moment: You're hungry.**
 
-"I'm hungry. What do I want? Hmm... egg? Or paneer? Wait, maybe pizza? Actually, I had pizza yesterday. Okay, egg. But I'm bored of scrambled eggs. What about trying that new egg topping I saw on pizza? Could work. Should I cook it myself or order? I have eggs in the fridge, but I'm tired. How tired? Tired enough to pay $15 for delivery? No, I'll cook. But do I have cheese? Let me check..."
+Your brain naturally does this: "What do I want? Egg or pizza? Had pizza yesterday. Egg it is. But scrambled is boring... what about that egg topping combo I saw? Should I cook or order? I have eggs but I'm tired. Worth $15? No, I'll cook."
 
-**This isn't overthinking. This is your brain:**
-- Accessing memory (what did I eat yesterday?)
-- Weighing trade-offs (cost vs. convenience vs. health)
-- Problem-solving (creative cooking combinations)
-- Planning ahead (inventory check, effort estimation)
-- Making decisions under constraints (time, money, energy)
+**This isn't overthinking. This is your brain exercising critical pathways:**
+- Memory recall (yesterday's meal)
+- Trade-off analysis (cost vs. convenience)
+- Creative problem-solving (new combinations)
+- Planning and constraints (time, money, energy)
 
-**Every small decision exercises dozens of neural pathways.** This is how your brain stays sharp. This is critical thinking in action.
-
-**Tomorrow, with full AI delegation:**
+**Now imagine with full AI delegation:**
 
 "I'm hungry."
 
-AI checks your calendar (meeting in 90 minutes), your health data (protein needed), your bank account (budget surplus today), your location (home), your fridge contents (via smart camera), your taste preferences (historical data), and optimizes: "Ordered: veggie pizza with egg topping from Joe's. ETA 25 minutes. Calories: 680. Cost: $12.40. Approved."
+AI analyzes your calendar, health data, budget, fridge contents, and preferences. Instant output: "Ordered: veggie pizza with egg topping. ETA 25 min. $12.40."
 
-**You didn't think. You didn't choose. You didn't even know there was a decision to make.**
+**You didn't think. You didn't decide. Those neural pathways? Atrophying from disuse.**
 
-**And your brain?** Those neural pathways for decision-making, planning, weighing trade-offs? **They atrophy from disuse.**
+This scales to everything: career moves, financial decisions, relationship advice, medical choices. Today AI advises. Tomorrow it decides. You wake up and your life has been optimized while you slept.
 
-#### From Meals to Mortgages
+**The uncomfortable truth:** You'll like it. It feels good. No decision fatigue, no regret. AI probably makes better choices than you do anyway.
 
-Now scale this up.
+**That's exactly the problem.** Every decision AI makes for you is one less time your brain practices deciding. The MIT study proved it: six months of heavy ChatGPT use, 35% reduction in neural connectivity. Your brain literally reorganizes to depend on external processing.
 
-**Today, you might use AI to help with:**
-- Career decisions ("Should I take this job?")
-- Financial planning ("How should I invest my savings?")
-- Relationship advice ("How do I handle this conflict?")
-- Medical decisions ("What treatment should I pursue?")
-
-**Still, you're the decision-maker. AI is the advisor.**
-
-**But we're trending toward AI as decision-maker:**
-- Your AI career coach doesn't just advise—it applies to jobs on your behalf
-- Your AI financial advisor doesn't just suggest—it executes trades automatically
-- Your AI health assistant doesn't just inform—it schedules treatments and orders prescriptions
-- You wake up and your life has been optimized while you slept
-
-**Is this progress? Or is this surrender?**
-
-#### The Uncomfortable Truth
-
-**Here's what we're not talking about:**
-
-You *like* this. It feels *good*. No decision fatigue. No analysis paralysis. No regret about suboptimal choices. AI handles it, and honestly? It probably makes better decisions than you do.
-
-**And that's exactly the problem.**
-
-Because every time AI makes a decision for you, that's **one less time your brain practices making decisions**. And like any muscle, **your decision-making ability weakens from disuse**.
-
-**Six months from now:** You struggle to choose a restaurant without AI's input.
-**One year from now:** You feel anxious making choices AI hasn't validated.
-**Two years from now:** You can't remember the last major decision you made independently.
-
-**This isn't a dystopian future. This is the trajectory we're on RIGHT NOW.**
-
-The MIT study showed it: Six months of heavy ChatGPT use, 35% reduction in neural connectivity. **Your brain literally reorganizes to depend on external processing.**
-
-**We're not losing our ability to think because AI is forcing us. We're losing it because thinking is hard, and AI makes it optional.**
-
-**And once it's gone, can we get it back?**
+**We're not losing thinking because AI forces us. We're losing it because thinking is hard, and AI makes it optional.**
 
 ### The Data Cannot Be Ignored
 
 We began this research with a simple question: **Is AI adoption affecting human cognitive ability at the population level?**
 
-The data answered with alarming clarity.
+The observed data answered with alarming clarity.
 
-**Figure 1: Cognitive Index Decline (2020-2024)**
+**Figure 1: Historical Cognitive Index (2012-2024) - Observed Data**
 
-![Cognitive Index Historical Trend](src/results/forecast_current_rates_only.png)
+![Cognitive Index Historical Trend](src/results/historical_cognitive_index_observed.png)
 
-From 2020-2022 (pre-ChatGPT era), the cognitive index declined at **0.35 points per year**—a slow, steady baseline driven by factors like social media and digital distraction.
+From 2012-2022 (pre-ChatGPT era), the cognitive index declined at **0.28 points per year**—a slow, steady baseline driven by factors like social media and digital distraction.
 
 Then ChatGPT launched in November 2022.
 
-From 2022-2024, the decline rate jumped to **0.55 points per year**—a 57% acceleration. This isn't random variance. This is a **structural break** in the trend, coinciding precisely with mass AI adoption.
+From 2022-2024, the decline rate jumped to **0.55 points per year**—a **96% acceleration**. This isn't random variance. This is a **structural break** in the trend, coinciding precisely with mass AI adoption.
+
+**This is observed data from PISA scores, NAEP assessments, and Flynn effect studies. Not projections. Not models. Measured reality.**
 
 ### What the Numbers Mean
 
@@ -280,9 +243,15 @@ So we model **three plausible scenarios:**
 
 ## Part IV: The Forecast - Where We're Headed
 
+The observed data (2012-2024) establishes the pattern. Now we project forward.
+
+**Figure 4: Our Forecast - Current Rates Scenario**
+
+![Forecast Current Rates](src/results/forecast_current_rates_only.png)
+
 ### The Baseline Path: Current Rates
 
-If current trends continue—156% annual growth in AI adoption, exponential capability increases, no major interventions—here's what happens:
+If current trends continue—156% annual growth in AI adoption, exponential capability increases, no major interventions—here's what our model projects:
 
 **2025-2026: WARNING Zone**
 - Cognitive index: 96.1 → 95.2
@@ -362,54 +331,22 @@ We tested 8 scenarios to understand which interventions matter:
 - Intervention is damage control, not prevention
 - Structural changes face massive resistance
 
-### What Intervention Looks Like
+### What Intervention Could Look Like
 
-**Individual Level: Safe AI Interaction Patterns**
+Our model shows early intervention (2026) is **3x more effective** than delayed action (2028). The scenarios tested include policy responses, AI redesign for learning, and adoption slowdowns.
 
-**Teach people to use AI as a tool, not a replacement:**
-- "Ask AI to explain, not just answer"
-- "Draft first, then use AI to refine—not the reverse"
-- "Challenge AI's answers, don't accept blindly"
-- "Use AI for verification, not generation of core thinking"
+**We're AI researchers presenting a forecast, not neuroscientists prescribing solutions.** But the data suggests several intervention pathways:
 
-**Example:**
-- ❌ Wrong: "AI, write my analysis of this dataset"
-- ✓ Right: "I think this data shows X because Y. AI, what am I missing?"
+**Individual behavior:** Using AI as a tool for verification rather than replacement of thinking
+**AI design:** Systems that scaffold learning instead of replacing cognitive effort (HumanAgencyBench research direction)
+**Policy & awareness:** Understanding and tracking cognitive impact at scale
 
-**Policy Level: Regulation & Redesign**
+**If intervention happens by 2026:**
+- 2030 cognitive index could stabilize at 88-90 (still CRITICAL, but slower decline)
+- Decline rate: 1.5 pts/year → 0.8 pts/year
+- Time to develop better solutions and understand long-term effects
 
-**Government/regulatory actions:**
-- Require AI tools to disclose cognitive impact (like nutrition labels)
-- Fund research on long-term cognitive effects
-- Mandate "learning mode" options in AI tools for education
-- Restrict AI usage in critical thinking education (K-12, university)
-
-**Industry actions:**
-- Redesign AI to scaffold learning, not replace it (HumanAgencyBench principles)
-- Implement "friction" for critical decisions (require human review)
-- Develop cognitive health metrics (like screen time tracking)
-- Open-source cognitive impact research
-
-**Societal Level: Awareness Campaign**
-
-**The message:**
-"AI is powerful. But every time you outsource thinking, you weaken your ability to think. Use AI wisely, or lose the ability to use your mind."
-
-**Target:** Reach critical mass (30-40% awareness) by 2026
-- Public health campaign (like anti-smoking)
-- Education system integration
-- Media coverage of cognitive debt research
-- Influencer/celebrity advocacy
-
-### What Success Looks Like
-
-**If we intervene by 2026:**
-- 2030 cognitive index: 88-90 (still CRITICAL, but manageable)
-- Slower decline rate (1.5 points/year → 0.8 points/year)
-- New generation learns safe AI patterns
-- Cultural norms shift toward "AI-assisted thinking" not "AI-replaced thinking"
-
-**This doesn't reverse the trend. But it buys us time** to develop better solutions, understand long-term effects, and adapt society.
+**This doesn't reverse the trend. But it buys us time.**
 
 ---
 
