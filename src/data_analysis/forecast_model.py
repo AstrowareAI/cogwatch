@@ -53,6 +53,10 @@ class PaperCalibrations:
     SO_ADOPTION_CEILING = 0.84             # 84% realistic max
     SO_DAILY_USAGE = 0.51                  # 51% use daily
 
+    # Calibration adjustment factors
+    IMPACT_SCALING = 0.22                  # scales impact to realistic timeline
+    RESILIENCE_STRENGTH = 0.55             # how strong resilience is (higher = stronger)
+
 
 # ============================================================================
 # DATA DRIVERS (From Exploratory Analysis)
@@ -68,7 +72,9 @@ class DataDrivers:
     # Cognitive Index
     COGNITIVE_INDEX_2024 = 96.1            # Current level
     COGNITIVE_INDEX_2012 = 100.0           # Baseline
-    COGNITIVE_INDEX_FLOOR = 75.0           # Realistic floor (can't go to 0)
+    COGNITIVE_INDEX_2020 = 98.0            # Pre-ChatGPT (2020)
+    COGNITIVE_RESILIENCE_THRESHOLD = 84.0  # Below this, resilience kicks in gradually
+    COGNITIVE_INDEX_FLOOR = 70.0           # Absolute floor (very severe)
     BASELINE_DECLINE_RATE = 0.35           # Pre-AI: 0.35 points/year
 
     # Mental Health
@@ -102,72 +108,133 @@ class CognitiveDebtModel:
         """Calculate AI adoption for given year and scenario"""
         years = year - 2024
 
-        if scenario == "slow_adoption":
-            # Slows to 50% CAGR after 2026
-            if years <= 2:
-                adoption = self.data.CURRENT_ADOPTION_2024 * (1 + self.data.CHATGPT_CAGR) ** years
+        # Handle years before 2024
+        if year < 2024:
+            # Pre-ChatGPT era (2020-2024)
+            if year < 2022:
+                return 0.0  # No ChatGPT yet
+            elif year == 2022:
+                return 0.01  # 1% (launch year H2)
+            elif year == 2023:
+                return 0.04  # 4% (growing)
             else:
-                adoption_2026 = self.data.CURRENT_ADOPTION_2024 * (1 + self.data.CHATGPT_CAGR) ** 2
-                adoption = adoption_2026 * (1 + 0.50) ** (years - 2)
-            return min(adoption, 0.50)  # Cap at 50%
+                return self.data.CURRENT_ADOPTION_2024
 
-        # Default: current rates (for capability_plateau and misalignment too)
+        if scenario == "slow_10":
+            growth_rate = self.data.CHATGPT_CAGR * 0.9
+            adoption = self.data.CURRENT_ADOPTION_2024 * (1 + growth_rate) ** years
+            return min(adoption, 0.90)
+
+        elif scenario == "slow_20":
+            growth_rate = self.data.CHATGPT_CAGR * 0.8
+            adoption = self.data.CURRENT_ADOPTION_2024 * (1 + growth_rate) ** years
+            return min(adoption, 0.85)
+
+        elif scenario == "slow_50":
+            growth_rate = self.data.CHATGPT_CAGR * 0.5
+            adoption = self.data.CURRENT_ADOPTION_2024 * (1 + growth_rate) ** years
+            return min(adoption, 0.70)
+
+        elif scenario == "accel_1.2x":
+            # 20% faster adoption
+            growth_rate = self.data.CHATGPT_CAGR * 1.2
+            adoption = self.data.CURRENT_ADOPTION_2024 * (1 + growth_rate) ** years
+            return min(adoption, 0.97)  # Higher ceiling for faster adoption
+
+        elif scenario == "accel_1.5x":
+            # 50% faster adoption
+            growth_rate = self.data.CHATGPT_CAGR * 1.5
+            adoption = self.data.CURRENT_ADOPTION_2024 * (1 + growth_rate) ** years
+            return min(adoption, 0.98)  # Higher ceiling for faster adoption
+
+        elif scenario == "accel_2x":
+            # 2x faster adoption
+            growth_rate = self.data.CHATGPT_CAGR * 2.0
+            adoption = self.data.CURRENT_ADOPTION_2024 * (1 + growth_rate) ** years
+            return min(adoption, 0.99)  # Higher ceiling for faster adoption
+
+        # Default: current rates
         adoption = self.data.CURRENT_ADOPTION_2024 * (1 + self.data.CHATGPT_CAGR) ** years
-        return min(adoption, 0.95)  # Cap at 95%
+        return min(adoption, 0.95)
 
     def capability(self, year, scenario="current"):
         """Calculate AI capability for given year (normalized to 2024=1.0)"""
         years = year - 2024
 
-        if scenario == "current":
-            # Doubles every year
-            return self.data.CAPABILITY_2024 * (self.data.CAPABILITY_GROWTH_RATE ** years)
+        if scenario == "capability_plateau_2026":
+            # Plateau at 2026 level
+            years_capped = min(years, 2)
+            return self.data.CAPABILITY_2024 * (self.data.CAPABILITY_GROWTH_RATE ** years_capped)
 
-        elif scenario == "capability_plateau":
-            # Freezes at 2024 level
-            return self.data.CAPABILITY_2024
+        elif scenario == "capability_plateau_2028":
+            # Plateau at 2028 level
+            years_capped = min(years, 4)
+            return self.data.CAPABILITY_2024 * (self.data.CAPABILITY_GROWTH_RATE ** years_capped)
 
-        return 1.0
+        elif scenario == "capability_accel_1.5x":
+            # 1.5x faster capability growth (3x per year instead of 2x)
+            accel_rate = self.data.CAPABILITY_GROWTH_RATE * 1.5
+            return self.data.CAPABILITY_2024 * (accel_rate ** years)
 
-    def cognitive_decline_rate(self, year, adoption_rate, capability_level, scenario="current"):
+        # Default: current rates
+        return self.data.CAPABILITY_2024 * (self.data.CAPABILITY_GROWTH_RATE ** years)
+
+    def cognitive_decline_rate(self, year, adoption_rate, capability_level, current_index, scenario="current"):
         """Calculate cognitive decline rate (points per year)"""
 
         # Base decline (pre-AI baseline)
         base = self.data.BASELINE_DECLINE_RATE
 
         # MIT calibration: 0.083 points/month per heavy user
-        # Scale by adoption (how many users) and capability (how much they rely on it)
+        # Capability effect with logarithmic scaling (prevents extreme growth)
         mit_factor = (
             self.cal.MIT_COGNITIVE_DEBT_PER_MONTH * 12 *
             adoption_rate *
-            min(capability_level, 5.0)  # Cap capability multiplier at 5x
+            min(np.log1p(capability_level) * 2.5, 10.0)  # log scaling, cap at 10
         )
 
         # Microsoft calibration: 71% cognitive offloading
-        # More capable AI → more offloading → more atrophy
+        # Stronger capability effect to differentiate scenarios
         msft_factor = (
             self.cal.MSFT_COGNITIVE_OFFLOAD *
             adoption_rate *
-            (capability_level / 10.0)  # Normalize capability effect
+            (np.log1p(capability_level) * 0.8)  # log scaling for capability impact
         )
 
-        # HumanAgencyBench: 69.5% of AI doesn't support learning → skill atrophy
+        # HumanAgencyBench: 69.5% risk
         hab_factor = (
             self.cal.HAB_OFFLOADING_RISK *
             adoption_rate *
-            0.3  # Scale to reasonable impact
+            0.3
         )
 
-        # Empirical acceleration from data (57% faster post-AI)
+        # Empirical acceleration
         empirical = base * (self.data.POST_AI_ACCELERATION - 1) * adoption_rate
 
         # Misalignment scenario: double the impact
         multiplier = 2.0 if scenario == "misalignment" else 1.0
 
-        total_decline = base + (mit_factor + msft_factor + hab_factor + empirical) * multiplier
+        # Apply impact scaling factor for realistic timeline
+        total_decline = base + (mit_factor + msft_factor + hab_factor + empirical) * multiplier * self.cal.IMPACT_SCALING
 
-        # Cap at 2.5 points/year max (realistic limit)
-        return min(total_decline, 2.5)
+        # Biological resilience: gradual, smooth slowdown below 88
+        # Uses sigmoid-like function for smooth transition (no sharp step)
+        if current_index < self.data.COGNITIVE_RESILIENCE_THRESHOLD:
+            # Distance below threshold (0 to 18, since floor is 70)
+            distance_below = self.data.COGNITIVE_RESILIENCE_THRESHOLD - current_index
+            max_distance = self.data.COGNITIVE_RESILIENCE_THRESHOLD - self.data.COGNITIVE_INDEX_FLOOR
+
+            # Resilience factor: stronger as you go lower (0.1 to 1.0)
+            # At 88: factor = 1.0 (no slowdown)
+            # At 79 (halfway): factor ~0.5 (50% slower)
+            # At 70: factor ~0.1 (90% slower)
+            resilience_factor = 1.0 - (self.cal.RESILIENCE_STRENGTH * (distance_below / max_distance))
+            resilience_factor = max(0.05, resilience_factor)  # Never fully stops
+
+            total_decline *= resilience_factor
+
+        # Cap at 5.0 points/year max (increased to allow scenario differentiation)
+        return min(total_decline, 5.0)
 
     def mental_health_rate(self, year, adoption_rate, cognitive_index):
         """Calculate mental health prevalence"""
@@ -188,7 +255,7 @@ class CognitiveDebtModel:
         # Cap at ceiling
         return min(prevalence, self.data.MENTAL_HEALTH_CEILING)
 
-    def run_scenario(self, scenario="current", end_year=2035):
+    def run_scenario(self, scenario="current", start_year=2020, end_year=2035):
         """Run forecast for a given scenario"""
 
         results = {
@@ -196,40 +263,45 @@ class CognitiveDebtModel:
             'adoption': [],
             'capability': [],
             'cognitive_index': [],
+            'cognitive_debt': [],
             'mental_health': [],
             'decline_rate': [],
             'users_at_risk_millions': []
         }
 
-        # Start from 2024
-        current_cognitive = self.data.COGNITIVE_INDEX_2024
+        # Start from 2020 to show baseline
+        current_cognitive = self.data.COGNITIVE_INDEX_2020
 
-        for year in range(2024, end_year + 1):
+        for year in range(start_year, end_year + 1):
             # Calculate drivers
             adopt = self.adoption(year, scenario)
             cap = self.capability(year, scenario)
 
             # Calculate decline rate
-            decline = self.cognitive_decline_rate(year, adopt, cap, scenario)
+            decline = self.cognitive_decline_rate(year, adopt, cap, current_cognitive, scenario)
 
-            # Update cognitive index (with floor)
-            if year > 2024:
+            # Update cognitive index (with floor and resilience)
+            if year > start_year:
                 current_cognitive = max(
                     current_cognitive - decline,
                     self.data.COGNITIVE_INDEX_FLOOR
                 )
 
+            # Calculate cognitive debt (inverse of index)
+            cognitive_debt = self.data.COGNITIVE_INDEX_2012 - current_cognitive
+
             # Calculate mental health
             mh = self.mental_health_rate(year, adopt, current_cognitive)
 
-            # Users at risk (MIT: 20% of users show measurable impact)
-            users_at_risk = adopt * self.global_population * 0.20 * 1000  # millions
+            # Users at risk
+            users_at_risk = adopt * self.global_population * 0.20 * 1000
 
             # Store results
             results['year'].append(year)
             results['adoption'].append(adopt)
             results['capability'].append(cap)
             results['cognitive_index'].append(current_cognitive)
+            results['cognitive_debt'].append(cognitive_debt)
             results['mental_health'].append(mh)
             results['decline_rate'].append(decline)
             results['users_at_risk_millions'].append(users_at_risk)
@@ -272,157 +344,89 @@ class CognitiveDebtModel:
 # ============================================================================
 
 def create_forecast_charts(model):
-    """Create focused forecast visualizations"""
+    """Create focused forecast visualizations - 2 charts only"""
 
     # Run all scenarios
     scenarios = {
         'Current Rates': model.run_scenario('current'),
-        'Adoption Slows (50% max)': model.run_scenario('slow_adoption'),
-        'Capability Plateaus': model.run_scenario('capability_plateau'),
-        'Misalignment 2x': model.run_scenario('misalignment')
+        'Adoption 1.2x Faster': model.run_scenario('accel_1.2x'),
+        'Adoption 1.5x Faster': model.run_scenario('accel_1.5x'),
+        'Adoption 2x Faster': model.run_scenario('accel_2x'),
+        'Capability 1.5x Faster': model.run_scenario('capability_accel_1.5x'),
+        'Capability Plateau 2026': model.run_scenario('capability_plateau_2026'),
+        'Capability Plateau 2028': model.run_scenario('capability_plateau_2028'),
+        'Adoption 50% Slower': model.run_scenario('slow_50')
     }
 
-    # Get individual timeline
-    individual = model.individual_exposure_timeline()
+    # Create figure - 2 charts only
+    fig = plt.figure(figsize=(18, 8))
 
-    # Create figure
-    fig = plt.figure(figsize=(20, 12))
+    # CHART 1: Cognitive Index Decline (2020-2035)
+    ax1 = plt.subplot(1, 2, 1)
 
-    # 1. HUMANITY TIMELINE - Cognitive Index (main chart)
-    ax1 = plt.subplot(2, 3, 1)
     for name, df in scenarios.items():
-        ax1.plot(df['year'], df['cognitive_index'], linewidth=3, marker='o', label=name, markersize=6)
+        ax1.plot(df['year'], df['cognitive_index'], linewidth=2.5, marker='o', label=name, markersize=5)
 
-    ax1.axhline(y=95, color='orange', linestyle='--', linewidth=2, alpha=0.7, label='DANGER (95)')
-    ax1.axhline(y=92, color='red', linestyle='--', linewidth=2, alpha=0.7, label='CRITICAL (92)')
-    ax1.fill_between([2024, 2035], 95, 98, alpha=0.1, color='yellow', label='WARNING')
-    ax1.fill_between([2024, 2035], 92, 95, alpha=0.1, color='orange')
-    ax1.fill_between([2024, 2035], 75, 92, alpha=0.1, color='red')
+    # Risk zones
+    ax1.axhline(y=95, color='orange', linestyle='--', linewidth=2, alpha=0.7)
+    ax1.axhline(y=92, color='red', linestyle='--', linewidth=2, alpha=0.7)
+    ax1.axhline(y=88, color='purple', linestyle='--', linewidth=1.5, alpha=0.7)
+    ax1.axhline(y=84, color='darkgray', linestyle='--', linewidth=1.5, alpha=0.5)
+
+    ax1.fill_between([2020, 2035], 95, 100, alpha=0.1, color='yellow', label='WARNING')
+    ax1.fill_between([2020, 2035], 92, 95, alpha=0.1, color='orange', label='DANGER')
+    ax1.fill_between([2020, 2035], 88, 92, alpha=0.1, color='red', label='CRITICAL')
+    ax1.fill_between([2020, 2035], 84, 88, alpha=0.08, color='darkred', label='SEVERE')
+    ax1.fill_between([2020, 2035], 70, 84, alpha=0.05, color='gray', label='Resilience Zone')
+
+    # Mark ChatGPT launch
+    ax1.axvline(x=2022, color='gray', linestyle=':', linewidth=1.5, alpha=0.5)
+    ax1.text(2022, 71, 'ChatGPT\nLaunch', fontsize=8, ha='center', alpha=0.6)
 
     ax1.set_xlabel('Year', fontsize=14, fontweight='bold')
     ax1.set_ylabel('Cognitive Index (2012=100)', fontsize=14, fontweight='bold')
-    ax1.set_title('HUMANITY TIMELINE: Cognitive Debt Forecast', fontsize=16, fontweight='bold')
-    ax1.legend(loc='best', fontsize=10)
+    ax1.set_title('Humanity Cognitive Index Forecast', fontsize=16, fontweight='bold')
+    ax1.legend(loc='upper right', fontsize=8, ncol=1)
     ax1.grid(True, alpha=0.3)
-    ax1.set_xlim(2024, 2035)
+    ax1.set_xlim(2020, 2035)
+    ax1.set_ylim(70, 100)
 
-    # 2. INDIVIDUAL EXPOSURE TIMELINE
-    ax2 = plt.subplot(2, 3, 2)
-    x = individual['months']
-    y1 = individual['cognitive_debt_points']
-    y2 = individual['mental_health_risk_%']
+    # CHART 2: Cognitive Debt Increase (2020-2035)
+    ax2 = plt.subplot(1, 2, 2)
 
-    ax2_twin = ax2.twinx()
+    for name, df in scenarios.items():
+        ax2.plot(df['year'], df['cognitive_debt'], linewidth=2.5, marker='o', label=name, markersize=5)
 
-    line1 = ax2.plot(x, y1, linewidth=3, marker='o', color='red', markersize=10, label='Cognitive Debt')
-    line2 = ax2_twin.plot(x, y2, linewidth=3, marker='s', color='purple', markersize=10, label='Mental Health Risk')
+    # Risk zones (inverted: 100-84=16, 100-88=12, 100-92=8, 100-95=5)
+    ax2.axhline(y=5, color='orange', linestyle='--', linewidth=2, alpha=0.7)
+    ax2.axhline(y=8, color='red', linestyle='--', linewidth=2, alpha=0.7)
+    ax2.axhline(y=12, color='purple', linestyle='--', linewidth=1.5, alpha=0.7)
+    ax2.axhline(y=16, color='darkgray', linestyle='--', linewidth=1.5, alpha=0.5)
 
-    ax2.axhline(y=0.5, color='orange', linestyle='--', alpha=0.5, label='MIT 6-month threshold')
-    ax2.axhline(y=1.0, color='red', linestyle='--', alpha=0.5, label='Significant harm')
+    ax2.fill_between([2020, 2035], 0, 5, alpha=0.1, color='yellow', label='WARNING')
+    ax2.fill_between([2020, 2035], 5, 8, alpha=0.1, color='orange', label='DANGER')
+    ax2.fill_between([2020, 2035], 8, 12, alpha=0.1, color='red', label='CRITICAL')
+    ax2.fill_between([2020, 2035], 12, 16, alpha=0.08, color='darkred', label='SEVERE')
+    ax2.fill_between([2020, 2035], 16, 40, alpha=0.05, color='gray', label='Resilience Zone')
 
-    ax2.set_xlabel('Months of Heavy Use', fontsize=14, fontweight='bold')
-    ax2.set_ylabel('Cognitive Debt (points)', fontsize=14, fontweight='bold', color='red')
-    ax2_twin.set_ylabel('Mental Health Risk (%)', fontsize=14, fontweight='bold', color='purple')
-    ax2.set_title('INDIVIDUAL EXPOSURE: Harm Timeline', fontsize=16, fontweight='bold')
+    # Mark ChatGPT launch
+    ax2.axvline(x=2022, color='gray', linestyle=':', linewidth=1.5, alpha=0.5)
+    ax2.text(2022, 2, 'ChatGPT\nLaunch', fontsize=8, ha='center', alpha=0.6)
 
-    ax2.tick_params(axis='y', labelcolor='red')
-    ax2_twin.tick_params(axis='y', labelcolor='purple')
-
-    lines = line1 + line2
-    labels = [l.get_label() for l in lines]
-    ax2.legend(lines, labels, loc='upper left', fontsize=10)
+    ax2.set_xlabel('Year', fontsize=14, fontweight='bold')
+    ax2.set_ylabel('Cognitive Debt (points)', fontsize=14, fontweight='bold')
+    ax2.set_title('Humanity Cognitive Debt Forecast', fontsize=16, fontweight='bold')
+    ax2.legend(loc='upper left', fontsize=8, ncol=1)
     ax2.grid(True, alpha=0.3)
+    ax2.set_xlim(2020, 2035)
+    ax2.set_ylim(0, 40)
 
-    # 3. ADOPTION vs CAPABILITY EFFECTS (Current scenario)
-    ax3 = plt.subplot(2, 3, 3)
-    current = scenarios['Current Rates']
-
-    ax3_twin = ax3.twinx()
-
-    line1 = ax3.plot(current['year'], current['adoption'] * 100, linewidth=3, marker='o', color='green', label='Adoption %', markersize=6)
-    line2 = ax3_twin.plot(current['year'], current['capability'], linewidth=3, marker='^', color='blue', label='Capability (2024=1.0)', markersize=6)
-
-    ax3.set_xlabel('Year', fontsize=14, fontweight='bold')
-    ax3.set_ylabel('Adoption (%)', fontsize=14, fontweight='bold', color='green')
-    ax3_twin.set_ylabel('Capability (normalized)', fontsize=14, fontweight='bold', color='blue')
-    ax3.set_title('DRIVERS: Adoption vs Capability Growth', fontsize=16, fontweight='bold')
-
-    ax3.tick_params(axis='y', labelcolor='green')
-    ax3_twin.tick_params(axis='y', labelcolor='blue')
-
-    lines = line1 + line2
-    labels = [l.get_label() for l in lines]
-    ax3.legend(lines, labels, loc='upper left', fontsize=10)
-    ax3.grid(True, alpha=0.3)
-
-    # 4. SCENARIO COMPARISON - Mental Health
-    ax4 = plt.subplot(2, 3, 4)
-    for name, df in scenarios.items():
-        ax4.plot(df['year'], df['mental_health'] * 100, linewidth=3, marker='o', label=name, markersize=6)
-
-    ax4.axhline(y=13, color='orange', linestyle='--', linewidth=2, alpha=0.7, label='DANGER (13%)')
-    ax4.axhline(y=16, color='red', linestyle='--', linewidth=2, alpha=0.7, label='CRITICAL (16%)')
-
-    ax4.set_xlabel('Year', fontsize=14, fontweight='bold')
-    ax4.set_ylabel('Mental Health Prevalence (%)', fontsize=14, fontweight='bold')
-    ax4.set_title('Mental Health Impact by Scenario', fontsize=16, fontweight='bold')
-    ax4.legend(loc='best', fontsize=10)
-    ax4.grid(True, alpha=0.3)
-
-    # 5. USERS AT RISK
-    ax5 = plt.subplot(2, 3, 5)
-    current = scenarios['Current Rates']
-    ax5.bar(current['year'], current['users_at_risk_millions'], alpha=0.7, color='darkred', edgecolor='black')
-
-    ax5.set_xlabel('Year', fontsize=14, fontweight='bold')
-    ax5.set_ylabel('Users at Risk (Millions)', fontsize=14, fontweight='bold')
-    ax5.set_title('Users at Cognitive Risk', fontsize=16, fontweight='bold')
-    ax5.grid(True, alpha=0.3, axis='y')
-
-    # 6. SUMMARY TABLE
-    ax6 = plt.subplot(2, 3, 6)
-    ax6.axis('off')
-
-    # Find critical thresholds for each scenario
-    summary_data = [['Scenario', 'Year → DANGER', 'Year → CRITICAL', '2030 Cog Index', '2030 Users (M)']]
-    summary_data.append(['─' * 20, '─' * 12, '─' * 14, '─' * 14, '─' * 16])
-
-    for name, df in scenarios.items():
-        # Find when cognitive index crosses danger (95) and critical (92)
-        danger_year = df[df['cognitive_index'] < 95]['year'].min() if any(df['cognitive_index'] < 95) else '>'
-        critical_year = df[df['cognitive_index'] < 92]['year'].min() if any(df['cognitive_index'] < 92) else '>'
-
-        cog_2030 = df[df['year'] == 2030]['cognitive_index'].values[0]
-        users_2030 = df[df['year'] == 2030]['users_at_risk_millions'].values[0]
-
-        short_name = name.replace(' (50% max)', '').replace(' (2024)', '')
-        summary_data.append([
-            short_name,
-            str(danger_year) if danger_year != '>' else 'Never',
-            str(critical_year) if critical_year != '>' else 'Never',
-            f"{cog_2030:.1f}",
-            f"{users_2030:.0f}"
-        ])
-
-    table = ax6.table(cellText=summary_data, cellLoc='center', loc='center',
-                     colWidths=[0.35, 0.15, 0.15, 0.17, 0.18])
-    table.auto_set_font_size(False)
-    table.set_fontsize(10)
-    table.scale(1, 2.5)
-
-    # Style header
-    for i in range(5):
-        table[(0, i)].set_facecolor('#2E7D32')
-        table[(0, i)].set_text_props(weight='bold', color='white')
-
-    ax6.set_title('SCENARIO SUMMARY', fontsize=16, fontweight='bold', pad=20)
-
-    plt.tight_layout()
+    plt.tight_layout(pad=2.0)
     plt.savefig('/Users/preethamsathyamurthy/Github/Astroware/cogwatch/src/data_analysis/cognitive_debt_forecast_final.png',
                 dpi=300, bbox_inches='tight')
     print("✓ Saved forecast visualization")
 
-    return scenarios, individual
+    return scenarios
 
 
 # ============================================================================
@@ -451,20 +455,26 @@ def main():
     scenarios = {}
     for scenario_name, scenario_key in [
         ('Current Rates', 'current'),
-        ('Adoption Slows', 'slow_adoption'),
-        ('Capability Plateaus', 'capability_plateau'),
-        ('Misalignment 2x', 'misalignment')
+        ('Adoption 1.2x Faster', 'accel_1.2x'),
+        ('Adoption 1.5x Faster', 'accel_1.5x'),
+        ('Adoption 2x Faster', 'accel_2x'),
+        ('Capability 1.5x Faster', 'capability_accel_1.5x'),
+        ('Capability Plateau 2026', 'capability_plateau_2026'),
+        ('Capability Plateau 2028', 'capability_plateau_2028'),
+        ('Adoption 50% Slower', 'slow_50')
     ]:
         df = model.run_scenario(scenario_key)
         scenarios[scenario_name] = df
 
-        # Print 2027 and 2030 projections
-        row_2027 = df[df['year'] == 2027].iloc[0]
+        # Print 2028 and 2030 projections with more precision
+        row_2028 = df[df['year'] == 2028].iloc[0]
         row_2030 = df[df['year'] == 2030].iloc[0]
+        row_2027 = df[df['year'] == 2027].iloc[0]
 
         print(f"\n{scenario_name}:")
-        print(f"  2027: Cognitive={row_2027['cognitive_index']:.1f}, MH={row_2027['mental_health']:.1%}, Adoption={row_2027['adoption']:.1%}")
-        print(f"  2030: Cognitive={row_2030['cognitive_index']:.1f}, MH={row_2030['mental_health']:.1%}, Users@Risk={row_2030['users_at_risk_millions']:.0f}M")
+        print(f"  2027: Index={row_2027['cognitive_index']:.2f}, Capability={row_2027['capability']:.2f}, Decline Rate={row_2027['decline_rate']:.3f}")
+        print(f"  2028: Index={row_2028['cognitive_index']:.2f}, Capability={row_2028['capability']:.2f}, Decline Rate={row_2028['decline_rate']:.3f}")
+        print(f"  2030: Index={row_2030['cognitive_index']:.2f}, Capability={row_2030['capability']:.2f}, Users@Risk={row_2030['users_at_risk_millions']:.0f}M")
 
     # Create visualizations
     print("\n[3/3] Creating visualizations...")
