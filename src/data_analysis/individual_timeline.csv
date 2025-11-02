@@ -1,0 +1,8 @@
+months,cognitive_debt_points,mental_health_risk_%,status
+0,0.0,0.0,Baseline
+3,0.25,0.2,Early dependency
+6,0.5,0.3,Measurable decline
+12,1.0,0.6,Significant harm
+18,1.49,0.9,Serious impairment
+24,1.99,1.2,Serious impairment
+36,2.99,1.8,Severe impairment

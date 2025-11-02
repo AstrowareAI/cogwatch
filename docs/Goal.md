@@ -1,0 +1,3 @@
+1. What we want to arrive at is, if x users used chatgpt, in that x, a% will see cognitive decline after q months of usage for sure, b% will see after z moths of usage for sure
+2. At what point does cognitive decline prove fatal, like if we keep doing for n number of months
+3. Humanity as a whole, with population data, get an urgency score and a time-series forecast where combining 1 and 2, we get the safe zone, the warning zone and danger zone (its fine if we have already crossed safe zone also)
