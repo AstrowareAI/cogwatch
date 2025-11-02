@@ -15,10 +15,14 @@ python-dotenv
 # Data processing and forecasting
 numpy
 pandas
+scipy
 scikit-learn
 html5lib
 lxml
 torch
+
+openpyxl
+xlsxwriter
 
 # Dashboard
 streamlit
