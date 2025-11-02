@@ -53,21 +53,36 @@ class PaperCalibrations:
 
     # Model Robustness & Correction Factors
     # These account for real-world variability, non-linear effects, and model uncertainty
-    
-    IMPACT_SCALING = 0.22                  # Correction factor: Accounts for (1) Individual vs population effects
-                                           # (papers measure heavy users, model needs population average), 
+
+    # DEFAULT values - can be overridden in __init__ for uncertainty analysis
+    DEFAULT_IMPACT_SCALING = 0.22          # Correction factor: Accounts for (1) Individual vs population effects
+                                           # (papers measure heavy users, model needs population average),
                                            # (2) Non-linear/additive assumption uncertainties (MIT+MSFT+HAB may overlap),
                                            # (3) Real-world moderators (adaptation, regulations, awareness campaigns),
                                            # (4) Scenario buffers (slower adoption, capability plateaus, policy interventions)
-                                           # Acts as robustness buffer: if rates slow or capability growth moderates, 
+                                           # Acts as robustness buffer: if rates slow or capability growth moderates,
                                            # this scaling provides conservative margin
-    
-    RESILIENCE_STRENGTH = 0.55             # Biological resilience activation factor: Accounts for (1) Individual variation
+
+    DEFAULT_RESILIENCE_STRENGTH = 0.55     # Biological resilience activation factor: Accounts for (1) Individual variation
                                            # in cognitive resilience, (2) Adaptive responses as cognitive load increases,
                                            # (3) Compensatory mechanisms (behavioral adjustments, awareness, intervention),
                                            # (4) Model uncertainty in extreme scenarios
                                            # Higher value = stronger resilience response (more gradual decline under stress)
                                            # Acts as correction for non-linear biological limits and human adaptability
+
+    def __init__(self, impact_scaling=None, resilience_strength=None):
+        """
+        Allow overriding scaling factors for uncertainty analysis
+
+        Args:
+            impact_scaling: Override IMPACT_SCALING (default 0.22)
+                - 0.22 = conservative (lower bound)
+                - 0.50 = central estimate
+                - 1.0 = aggressive (full paper effects, upper bound)
+            resilience_strength: Override RESILIENCE_STRENGTH (default 0.55)
+        """
+        self.IMPACT_SCALING = impact_scaling if impact_scaling is not None else self.DEFAULT_IMPACT_SCALING
+        self.RESILIENCE_STRENGTH = resilience_strength if resilience_strength is not None else self.DEFAULT_RESILIENCE_STRENGTH
 
 
 # ============================================================================
@@ -112,8 +127,18 @@ class DataDrivers:
 class CognitiveDebtModel:
     """Main forecast model: data-driven, paper-calibrated"""
 
-    def __init__(self):
-        self.cal = PaperCalibrations()
+    def __init__(self, impact_scaling=None, resilience_strength=None):
+        """
+        Initialize model with optional parameter overrides for uncertainty analysis
+
+        Args:
+            impact_scaling: Override IMPACT_SCALING (default 0.22)
+                - 0.22 = conservative (current model, lower bound)
+                - 0.50 = central estimate (moderate real-world effects)
+                - 1.0 = aggressive (full paper effects, upper bound)
+            resilience_strength: Override RESILIENCE_STRENGTH (default 0.55)
+        """
+        self.cal = PaperCalibrations(impact_scaling, resilience_strength)
         self.data = DataDrivers()
         self.global_population = 8.2  # billion
 
@@ -166,6 +191,28 @@ class CognitiveDebtModel:
             adoption = self.data.CURRENT_ADOPTION_2024 * (1 + growth_rate) ** years
             return min(adoption, 0.99)  # Higher ceiling for faster adoption
 
+        elif scenario == "intervention_2026":
+            # Policy response kicks in 2026: awareness campaigns, regulations
+            # Growth continues until 2026, then slows dramatically
+            if year <= 2026:
+                adoption = self.data.CURRENT_ADOPTION_2024 * (1 + self.data.CHATGPT_CAGR) ** min(years, 2)
+            else:
+                # After 2026: growth rate drops to 25% (was 156%)
+                adoption_2026 = self.data.CURRENT_ADOPTION_2024 * (1 + self.data.CHATGPT_CAGR) ** 2
+                years_after = year - 2026
+                adoption = adoption_2026 * (1 + 0.25) ** years_after
+            return min(adoption, 0.70)  # Lower ceiling with intervention
+
+        elif scenario == "intervention_2028":
+            # Delayed policy response (2028)
+            if year <= 2028:
+                adoption = self.data.CURRENT_ADOPTION_2024 * (1 + self.data.CHATGPT_CAGR) ** min(years, 4)
+            else:
+                adoption_2028 = self.data.CURRENT_ADOPTION_2024 * (1 + self.data.CHATGPT_CAGR) ** 4
+                years_after = year - 2028
+                adoption = adoption_2028 * (1 + 0.25) ** years_after
+            return min(adoption, 0.75)
+
         # Default: current rates
         adoption = self.data.CURRENT_ADOPTION_2024 * (1 + self.data.CHATGPT_CAGR) ** years
         return min(adoption, 0.95)
@@ -189,6 +236,30 @@ class CognitiveDebtModel:
             accel_rate = self.data.CAPABILITY_GROWTH_RATE * 1.5
             return self.data.CAPABILITY_2024 * (accel_rate ** years)
 
+        elif scenario == "capability_deceleration":
+            # Gradual slowdown: starts at 2x, decreases over time
+            # 2024-2026: 2x per year
+            # 2026-2028: 1.5x per year
+            # 2028-2030: 1.2x per year
+            # 2030+: 1.1x per year
+            if years <= 0:
+                return self.data.CAPABILITY_2024
+
+            # Calculate cumulative capability
+            capability = self.data.CAPABILITY_2024
+            for y in range(1, int(years) + 1):
+                age = y
+                if age <= 2:
+                    capability *= 2.0
+                elif age <= 4:
+                    capability *= 1.5
+                elif age <= 6:
+                    capability *= 1.2
+                else:
+                    capability *= 1.1
+
+            return capability
+
         # Default: current rates
         return self.data.CAPABILITY_2024 * (self.data.CAPABILITY_GROWTH_RATE ** years)
 
@@ -208,10 +279,23 @@ class CognitiveDebtModel:
 
         # Microsoft calibration: 71% cognitive offloading
         # Stronger capability effect to differentiate scenarios
+        # Design improvement scenario reduces offloading
+        if scenario == "design_improvement_2026":
+            # After 2026, AI design improves to support learning
+            # HumanAgencyBench "Encourage Learning" goes from 30.5% → 60%
+            # This reduces effective cognitive offload by 40%
+            if year >= 2026:
+                design_multiplier = 0.6  # 40% reduction in offloading
+            else:
+                design_multiplier = 1.0
+        else:
+            design_multiplier = 1.0
+
         msft_factor = (
             self.cal.MSFT_COGNITIVE_OFFLOAD *
             adoption_rate *
-            (np.log1p(capability_level) * 0.8)  # log scaling for capability impact
+            (np.log1p(capability_level) * 0.8) *
+            design_multiplier  # Apply design improvement
         )
 
         # HumanAgencyBench: 69.5% risk
@@ -341,6 +425,36 @@ class CognitiveDebtModel:
 
         return pd.DataFrame(results)
 
+    def run_scenario_with_uncertainty(self, scenario="current", start_year=2020, end_year=2035):
+        """
+        Run scenario with three uncertainty levels
+
+        Args:
+            scenario: Which scenario to run (current, slow_50, etc.)
+            start_year: Start year for forecast
+            end_year: End year for forecast
+
+        Returns:
+            dict: {
+                'conservative': DataFrame (IMPACT_SCALING=0.22),
+                'central': DataFrame (IMPACT_SCALING=0.50),
+                'aggressive': DataFrame (IMPACT_SCALING=1.0)
+            }
+        """
+        impact_levels = {
+            'conservative': 0.22,  # Current model (lower bound)
+            'central': 0.50,       # Moderate estimate
+            'aggressive': 1.0      # Full paper effects (upper bound)
+        }
+
+        results = {}
+        for level_name, scaling in impact_levels.items():
+            model = CognitiveDebtModel(impact_scaling=scaling)
+            df = model.run_scenario(scenario, start_year, end_year)
+            results[level_name] = df
+
+        return results
+
     def individual_exposure_timeline(self):
         """Calculate individual harm timeline (MIT + OpenAI calibration)"""
 
@@ -462,6 +576,177 @@ def create_forecast_charts(model):
     return scenarios
 
 
+def create_uncertainty_visualization(model):
+    """Create forecast with uncertainty bands"""
+
+    # Run current scenario with 3 uncertainty levels
+    uncertainty_results = model.run_scenario_with_uncertainty('current')
+
+    # Create figure - 2 charts
+    fig = plt.figure(figsize=(18, 8))
+
+    # CHART 1: Cognitive Index with Uncertainty Band
+    ax1 = plt.subplot(1, 2, 1)
+
+    conservative_df = uncertainty_results['conservative']
+    central_df = uncertainty_results['central']
+    aggressive_df = uncertainty_results['aggressive']
+
+    years = conservative_df['year']
+
+    # Fill uncertainty band (conservative to aggressive)
+    ax1.fill_between(
+        years,
+        conservative_df['cognitive_index'],
+        aggressive_df['cognitive_index'],
+        alpha=0.25, color='steelblue', label='Uncertainty Band\n(0.22 → 1.0 scaling)'
+    )
+
+    # Plot three lines
+    ax1.plot(years, conservative_df['cognitive_index'],
+             linewidth=2, linestyle='--', color='green',
+             label='Conservative (0.22)', alpha=0.7)
+    ax1.plot(years, central_df['cognitive_index'],
+             linewidth=3, color='darkblue',
+             label='Central Estimate (0.50)')
+    ax1.plot(years, aggressive_df['cognitive_index'],
+             linewidth=2, linestyle='--', color='red',
+             label='Aggressive (1.0)', alpha=0.7)
+
+    # Risk zones
+    ax1.axhline(y=95, color='orange', linestyle='--', linewidth=2, alpha=0.7)
+    ax1.axhline(y=92, color='red', linestyle='--', linewidth=2, alpha=0.7)
+    ax1.axhline(y=88, color='purple', linestyle='--', linewidth=1.5, alpha=0.7)
+    ax1.axhline(y=84, color='darkgray', linestyle='--', linewidth=1.5, alpha=0.5)
+
+    ax1.fill_between([2020, 2035], 95, 100, alpha=0.1, color='yellow', label='WARNING')
+    ax1.fill_between([2020, 2035], 92, 95, alpha=0.1, color='orange', label='DANGER')
+    ax1.fill_between([2020, 2035], 88, 92, alpha=0.1, color='red', label='CRITICAL')
+    ax1.fill_between([2020, 2035], 84, 88, alpha=0.08, color='darkred', label='SEVERE')
+
+    # Mark ChatGPT launch
+    ax1.axvline(x=2022, color='gray', linestyle=':', linewidth=1.5, alpha=0.5)
+    ax1.text(2022, 79, 'ChatGPT\nLaunch', fontsize=8, ha='center', alpha=0.6)
+
+    ax1.set_xlabel('Year', fontsize=14, fontweight='bold')
+    ax1.set_ylabel('Cognitive Index (2012=100)', fontsize=14, fontweight='bold')
+    ax1.set_title('Cognitive Index Forecast with Uncertainty Bands', fontsize=16, fontweight='bold')
+    ax1.legend(loc='upper right', fontsize=9, ncol=1)
+    ax1.grid(True, alpha=0.3)
+    ax1.set_xlim(2020, 2035)
+    ax1.set_ylim(78, 100)
+
+    # CHART 2: Cognitive Debt with Uncertainty Band
+    ax2 = plt.subplot(1, 2, 2)
+
+    # Fill uncertainty band
+    ax2.fill_between(
+        years,
+        conservative_df['cognitive_debt'],
+        aggressive_df['cognitive_debt'],
+        alpha=0.25, color='coral', label='Uncertainty Band'
+    )
+
+    # Plot three lines
+    ax2.plot(years, conservative_df['cognitive_debt'],
+             linewidth=2, linestyle='--', color='green',
+             label='Conservative (0.22)', alpha=0.7)
+    ax2.plot(years, central_df['cognitive_debt'],
+             linewidth=3, color='darkred',
+             label='Central Estimate (0.50)')
+    ax2.plot(years, aggressive_df['cognitive_debt'],
+             linewidth=2, linestyle='--', color='red',
+             label='Aggressive (1.0)', alpha=0.7)
+
+    # Risk zones
+    ax2.axhline(y=5, color='orange', linestyle='--', linewidth=2, alpha=0.7)
+    ax2.axhline(y=8, color='red', linestyle='--', linewidth=2, alpha=0.7)
+    ax2.axhline(y=12, color='purple', linestyle='--', linewidth=1.5, alpha=0.7)
+
+    ax2.fill_between([2020, 2035], 0, 5, alpha=0.1, color='yellow')
+    ax2.fill_between([2020, 2035], 5, 8, alpha=0.1, color='orange')
+    ax2.fill_between([2020, 2035], 8, 12, alpha=0.1, color='red')
+    ax2.fill_between([2020, 2035], 12, 25, alpha=0.08, color='darkred')
+
+    # Mark ChatGPT launch
+    ax2.axvline(x=2022, color='gray', linestyle=':', linewidth=1.5, alpha=0.5)
+    ax2.text(2022, 2, 'ChatGPT\nLaunch', fontsize=8, ha='center', alpha=0.6)
+
+    ax2.set_xlabel('Year', fontsize=14, fontweight='bold')
+    ax2.set_ylabel('Cognitive Debt (points)', fontsize=14, fontweight='bold')
+    ax2.set_title('Cognitive Debt Forecast with Uncertainty Bands', fontsize=16, fontweight='bold')
+    ax2.legend(loc='upper left', fontsize=9, ncol=1)
+    ax2.grid(True, alpha=0.3)
+    ax2.set_xlim(2020, 2035)
+    ax2.set_ylim(0, 25)
+
+    plt.tight_layout(pad=2.0)
+    plt.savefig('/Users/preethamsathyamurthy/Github/Astroware/cogwatch/src/results/forecast_uncertainty_bands.png',
+                dpi=300, bbox_inches='tight')
+    print("✓ Saved uncertainty bands visualization")
+
+    return uncertainty_results
+
+
+def create_scenario_comparison_chart(model):
+    """Compare all scenarios including new ones"""
+
+    scenarios = {
+        # Baseline
+        'Current Rates': model.run_scenario('current'),
+
+        # Adoption variations
+        'Adoption 50% Slower': model.run_scenario('slow_50'),
+        'Adoption 1.5x Faster': model.run_scenario('accel_1.5x'),
+
+        # Capability variations
+        'Capability Plateau 2026': model.run_scenario('capability_plateau_2026'),
+        'Capability Deceleration': model.run_scenario('capability_deceleration'),
+
+        # Intervention scenarios
+        'Intervention 2026': model.run_scenario('intervention_2026'),
+        'Intervention 2028': model.run_scenario('intervention_2028'),
+
+        # Design improvement
+        'Design Improvement 2026': model.run_scenario('design_improvement_2026')
+    }
+
+    fig, ax = plt.subplots(figsize=(16, 10))
+
+    # Plot all scenarios
+    for name, df in scenarios.items():
+        ax.plot(df['year'], df['cognitive_index'],
+                linewidth=2.5, marker='o', label=name, markersize=4)
+
+    # Risk zones
+    ax.axhline(y=95, color='orange', linestyle='--', linewidth=2, alpha=0.7, label='WARNING')
+    ax.axhline(y=92, color='red', linestyle='--', linewidth=2, alpha=0.7, label='DANGER')
+    ax.axhline(y=88, color='purple', linestyle='--', linewidth=1.5, alpha=0.7, label='CRITICAL')
+
+    ax.fill_between([2020, 2035], 95, 100, alpha=0.1, color='yellow')
+    ax.fill_between([2020, 2035], 92, 95, alpha=0.1, color='orange')
+    ax.fill_between([2020, 2035], 88, 92, alpha=0.1, color='red')
+
+    # Mark ChatGPT launch
+    ax.axvline(x=2022, color='gray', linestyle=':', linewidth=1.5, alpha=0.5)
+    ax.text(2022, 79, 'ChatGPT Launch', fontsize=10, ha='center', alpha=0.6)
+
+    ax.set_xlabel('Year', fontsize=14, fontweight='bold')
+    ax.set_ylabel('Cognitive Index (2012=100)', fontsize=14, fontweight='bold')
+    ax.set_title('Scenario Comparison: All Paths', fontsize=16, fontweight='bold')
+    ax.legend(loc='upper right', fontsize=10, ncol=2)
+    ax.grid(True, alpha=0.3)
+    ax.set_xlim(2020, 2035)
+    ax.set_ylim(78, 100)
+
+    plt.tight_layout()
+    plt.savefig('/Users/preethamsathyamurthy/Github/Astroware/cogwatch/src/results/scenario_comparison_all.png',
+                dpi=300, bbox_inches='tight')
+    print("✓ Saved scenario comparison visualization")
+
+    return scenarios
+
+
 # ============================================================================
 # MAIN
 # ============================================================================
@@ -510,8 +795,14 @@ def main():
         print(f"  2030: Index={row_2030['cognitive_index']:.2f}, Capability={row_2030['capability']:.2f}, Users@Risk={row_2030['users_at_risk_millions']:.0f}M")
 
     # Create visualizations
-    print("\n[3/3] Creating visualizations...")
+    print("\n[3/5] Creating base scenario visualizations...")
     create_forecast_charts(model)
+
+    print("\n[4/5] Creating uncertainty visualizations...")
+    create_uncertainty_visualization(model)
+
+    print("\n[5/5] Creating scenario comparison...")
+    create_scenario_comparison_chart(model)
 
     # Save data
     scenarios['Current Rates'].to_csv(
@@ -525,7 +816,9 @@ def main():
 
     print("\n✓ Complete!")
     print("\nGenerated files:")
-    print("  - cognitive_debt_forecast_final.png")
+    print("  - cognitive_debt_forecast_final.png (base scenarios)")
+    print("  - forecast_uncertainty_bands.png (NEW: uncertainty quantification)")
+    print("  - scenario_comparison_all.png (NEW: all scenarios)")
     print("  - forecast_scenarios.csv")
     print("  - individual_timeline.csv")
     print("=" * 80)
