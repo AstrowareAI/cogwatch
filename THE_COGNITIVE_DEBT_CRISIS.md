@@ -429,10 +429,43 @@ Current trajectory suggests **replacement**. And we're letting it happen because
 - **Scenarios:** 8 variations testing intervention effectiveness
 
 ### Data Sources
-- **Cognitive Index:** Composite measure from standardized testing, problem-solving tasks
-- **Adoption:** ChatGPT usage data, Stack Overflow survey
-- **Capability:** AI benchmark scores (MMLU, HumanEval, etc.)
-- **Mental Health:** WHO data, OpenAI internal metrics
+
+**Primary Empirical Data** (drives the forecast):
+
+1. **Cognitive Ability Index (2012-2024)**
+   - OECD PISA 2012, 2015, 2018, 2022 - Math, reading, science scores across 600,000+ students globally (https://www.oecd.org/pisa/)
+   - NCES NAEP Long-Term Trend - Age 13 cohorts, U.S. national assessments (https://nces.ed.gov/, https://www.nationsreportcard.gov/)
+   - Bratsberg & Rogeberg (2018, PNAS) - Flynn effect reversal in Norwegian conscripts (https://www.pnas.org/)
+   - Dworak et al. (2023, Intelligence Vol 98) - Adult fluid reasoning decline 2006-2018 (https://www.sciencedirect.com/science/article/pii/S0160289623000156)
+
+2. **AI Adoption & Growth Rates**
+   - ChatGPT penetration: 1% (2022) → 9% (2024) of global population
+   - Growth rate: 156% CAGR (2022-2024 observed)
+   - Stack Overflow Developer Survey 2024: 49,000+ respondents, 84% adoption, 51% daily use (https://stackoverflow.blog/)
+   - **Acceleration finding**: 18.38x faster than social media (156% vs 8.5% CAGR)
+
+3. **Social Media Growth (Historical Precedent)**
+   - Digital 2024 Global Overview Report (https://datareportal.com/)
+   - Growth: 31.4% → 63.0% penetration (2017-2025), 8.5% CAGR
+   - Used to establish technology adoption curves and mental health transfer function
+
+4. **Mental Health Correlation**
+   - WHO Global Health Estimates, Our World in Data (https://ourworldindata.org/mental-health)
+   - Prevalence: 9.1% (2012) → 11.9% (2024), 30.8% increase
+   - **Key finding**: R²=0.829 correlation with social media, 0.065 impact per 1% penetration
+
+5. **AI Capability & Harm Data**
+   - AI benchmarks (MMLU, HumanEval): 0.04 hours (2019) → 100+ hours (2025)
+   - AI Incident Database: 17 (2016) → 343 (2024) incidents (https://incidentdatabase.ai/)
+
+**Mechanistic Validation** (6 papers, calibration coefficients):
+
+1. **MIT Media Lab** (June 2025) - EEG scans, 54 students: 35% connectivity loss, 45% memory loss
+2. **Microsoft Research & CMU** (January 2025) - 319 workers, 936 tasks: 71% cognitive effort reduction
+3. **OpenAI** (October 2025) - Internal data: 0.22% weekly severe mental health signals
+4. **METR** (July 2025) - 16 developers, RCT: 19% slower with AI, 44% perception gap
+5. **HumanAgencyBench** (September 2025) - 20 LLMs tested: 69.5% don't encourage learning
+6. **Stack Overflow Survey** (2025) - 46% distrust but use anyway (addiction pattern)
 
 ### Key Parameters
 - **IMPACT_SCALING:** 0.22 (conservative), 0.50 (central), 1.0 (aggressive)
