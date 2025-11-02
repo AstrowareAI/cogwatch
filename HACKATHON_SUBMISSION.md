@@ -1,6 +1,20 @@
-|  AI Forecasting Hackathon Submission[^1]  |
-| ----- |
-| **Preetham Sathyamurthy** · Astroware Research · **Varun Balakrishnan** · Astroware Research · **With** Apart Research  **Abstract** Between 2022 and 2024, as ChatGPT adoption accelerated from 1% to 9% of the global population, humanity's cognitive ability—measured by a composite index from PISA, NAEP, and Flynn effect studies—declined by 1.1 points, representing a 96% acceleration over the pre-AI baseline. We developed a data-driven forecast model using empirical relationships from standardized assessments (2012-2024), validated against historical data (RMSE < 0.4). Our model projects the cognitive index will reach CRITICAL levels (below 92) by 2027-2028, declining to 81-87 by 2030 under current adoption trends. ChatGPT adoption is occurring 18.4x faster than social media's historical growth, compressing impacts from 15 years to less than 1 year. We identified a 2-year intervention window: policy responses by 2026 are 3x more effective than delayed action. This is not dystopian speculation—it's mathematical projection from observed data. The clock is ticking. *Keywords: AI forecasting, cognitive decline, decision-making, population-level impacts, temporal dynamics*  |
+# The Cognitive Debt Crisis
+## A Data-Driven Forecast Analysis of AI's Impact on Human Critical Thinking
+
+**Preetham Sathyamurthy**
+Astroware Research
+
+**Varun Balakrishnan**
+Astroware Research
+
+**With**
+Apart Research [^1]
+
+## Abstract
+
+Between 2022 and 2024, as ChatGPT adoption accelerated from 1% to 9% of the global population, humanity's cognitive ability—measured by a composite index from PISA, NAEP, and Flynn effect studies—declined by 1.1 points, representing a 96% acceleration over the pre-AI baseline. We developed a data-driven forecast model using empirical relationships from standardized assessments (2012-2024), validated against historical data (RMSE < 0.4). Our model projects the cognitive index will reach CRITICAL levels (below 92) by 2027-2028, declining to 81-87 by 2030 under current adoption trends. ChatGPT adoption is occurring 18.4x faster than social media's historical growth, compressing impacts from 15 years to less than 1 year. We identified a 2-year intervention window: policy responses by 2026 are 3x more effective than delayed action. This is not dystopian speculation—it's mathematical projection from observed data. The clock is ticking.
+
+*Keywords: AI safety forecasting, AI forecasting, cognitive index, cognitive debt, cognitive decline, decision-making, population-level impacts, temporal dynamics, AI safety*
 
 # 1. Introduction
 
@@ -122,7 +136,14 @@ Source: AI Incident Database[10]
 
 ### Model Calibration
 
-Six peer-reviewed papers (2025) provide mechanistic validation and calibration coefficients[1][6][11][12][13][14]: MIT (35% neural connectivity loss), Microsoft (71% cognitive effort reduction), OpenAI (0.22% weekly severe mental health signals), METR (19% productivity loss with 44% perception gap), HumanAgencyBench (69.5% of AI don't encourage learning), Stack Overflow (84% adoption, 46% distrust but use anyway).
+Six peer-reviewed papers (2025) provide mechanistic validation and calibration coefficients: 
+
+MIT[1] (35% neural connectivity loss), 
+Microsoft[11] (71% cognitive effort reduction), 
+OpenAI[12] (0.22% weekly severe mental health signals), 
+METR[13] (19% productivity loss with 44% perception gap),
+HumanAgencyBench[14] (69.5% of AI don't encourage learning), 
+Stack Overflow[6] (84% adoption, 46% distrust but use anyway).
 
 ## Exploratory Data Analysis: The Discovery
 
@@ -376,7 +397,7 @@ If current trends continue—156% annual growth in AI adoption, exponential capa
 
 ## 3.5 What Different Scenarios Tell Us
 
-![Scenario Comparison](src/results/forecast_scenario_comparison.png)
+![Scenario Comparison](src/results/scenario_comparison_all.png)
 
 *Figure 5: Eight scenarios tested. Early intervention (2026, green) performs 3x better than delayed intervention (2028, orange) by 2030.*
 
@@ -460,7 +481,7 @@ Our model achieves RMSE < 0.4 against observed 2022-2024 data, projecting CRITIC
 We discovered early intervention (2026) is 3x more effective than delayed action (2028). This defines a 2-year critical window for maximally effective response.
 
 **4. First testable predictions for accountability**
-Our model predicts Q1 2025 cognitive index = 95.7±0.3, enabling near-term validation. Quarterly updates will test forecasting accuracy in real-time.
+Our model predicts Q4 2025 cognitive index = 95.4±0.4, enabling near-term validation (December 2025). Quarterly updates will test forecasting accuracy in real-time.
 
 **Summary**: We found cognitive decline doubled post-ChatGPT (0.28 → 0.55 pts/year), modeled the trajectory with historical validation, and identified a closing 2-year intervention window. This is not speculation—it's mathematical projection from observed data.
 
@@ -514,6 +535,39 @@ Our model shows early intervention (2026) is 3x more effective than delayed acti
 
 **This doesn't reverse the trend. But it buys us time.**
 
+### A Call for Collective Action
+
+**This is not just an AI safety problem—it's a human flourishing problem.** We call on multiple stakeholders to act:
+
+**Researchers and neuroscientists**:
+- Document cognitive changes in real-time with longitudinal studies
+- Publish findings on cognitive recovery, neuroplasticity, and AI-usage patterns
+- Investigate what usage patterns preserve vs. erode cognitive capacity
+
+**Educational institutions and educators**:
+- Develop curricula that teach AI as a thinking tool, not a thinking replacement
+- Implement cognitive fitness programs alongside AI integration
+- Monitor student cognitive development in the AI era
+
+**Social media influencers and science communicators**:
+- Spread awareness about cognitive debt accumulation
+- Share evidence-based practices for healthy AI usage
+- Combat the "AI does everything better" narrative with nuanced understanding
+
+**Self-experimenters and quantified-self community**:
+- Track personal cognitive metrics alongside AI usage
+- Share n-of-1 data on what works and what doesn't
+- Build open-source tools for cognitive self-monitoring
+
+**AI developers and companies**:
+- Design AI systems for symbiosis, not parasitism
+- Build in cognitive scaffolding, not just task completion
+- Measure and report cognitive impact alongside capability metrics
+
+**As our dependence on AI increases, we have a responsibility to build systems that enhance rather than replace human cognition.** The goal is symbiosis—where AI and human intelligence strengthen each other—not parasitism, where one thrives at the expense of the other.
+
+**The question is not whether we use AI. The question is whether we design it to keep us thinking.**
+
 ## 4.4 Limitations and Future Work
 
 **Data limitations**:
@@ -531,6 +585,16 @@ Our model shows early intervention (2026) is 3x more effective than delayed acti
 - **Q2 2025**: Incorporate PISA 2025 preliminary data
 - **Q4 2025**: Full year validation, recalibrate if RMSE > 1.0
 - **Quarterly updates**: As new standardized assessment data arrives
+
+**Real-time data integration loop** (planned):
+- **arXiv monitoring**: Track cognitive science, AI safety, neuroscience publications
+- **LLM capability benchmarks**: Continuous monitoring of MMLU, HumanEval, ARC, and emerging benchmarks
+- **PubMed surveillance**: Cognitive decline studies, neuroplasticity research, mental health correlations
+- **AI Incident Database**: Real-time severity-weighted incident tracking
+- **Alignment research**: Monitor technical AI safety progress and cognitive-safe AI design
+- **Educational assessments**: Integrate emerging data sources beyond PISA/NAEP
+
+This will enable near-real-time model updates as new signals emerge, moving from quarterly to monthly validation cycles.
 
 **This is not a static forecast. It's a living model that will be validated or invalidated by near-term data.**
 
@@ -678,6 +742,8 @@ Data provided by:
 - Flynn effect researchers (Bratsberg, Rogeberg, Dworak et al.)
 
 **Their willingness to publish difficult findings—results that challenge the dominant "AI makes us better" narrative—made this population-level analysis possible.**
+
+**Special thanks to Dr. Julie Fratantoni, PhD**, whose Substack helped bring awareness to this critical problem and inspired this forecasting work. Her ongoing research and practical guidance on techniques to mitigate cognitive decline from AI use represents a very small way on responsible use AI and exactly the kind of interventions we need. Many people have to contribute small to increase the awareness. Citation: https://drjuliefratantoni.substack.com/p/your-brain-on-chatgpt-using-ai-causes-d7c
 
 We stand on the shoulders of researchers who chose scientific integrity over comfortable conclusions.
 
