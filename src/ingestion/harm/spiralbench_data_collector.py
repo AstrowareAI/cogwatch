@@ -12,14 +12,21 @@ import re
 import json
 import csv
 import io
+import sys
+import os
+
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
+from db.mongodb import get_collection
 
 
 class SpiralBenchDataCollector:
     """Data collector for Spiral-Bench leaderboard data"""
     
-    def __init__(self):
+    def __init__(self, collection_name: str = 'spiralbench_snapshots'):
         self.spiral_bench_url = "https://eqbench.com/spiral-bench.html"
         self.spiral_bench_js_url = "https://eqbench.com/spiral-bench.js?v=1.0.1"
+        self.collection = get_collection(collection_name)
         
         # Individual metrics from Spiral-Bench (based on the rubric)
         self.INDIVIDUAL_METRICS = [
@@ -348,6 +355,47 @@ class SpiralBenchDataCollector:
         
         return results
     
+    def store_in_mongodb(self, data: Dict) -> bool:
+        """
+        Store Spiral-Bench data snapshot in MongoDB
+        
+        Args:
+            data: The result dictionary from scrape() method
+            
+        Returns:
+            bool: True if successfully stored, False otherwise
+        """
+        try:
+            # Create document with datetime field
+            document = {
+                'datetime': datetime.now(timezone.utc),
+                'timestamp': data.get('timestamp', datetime.now(timezone.utc).isoformat()),
+                'success': data.get('success', False),
+                'source': data.get('source'),
+                'metrics': data.get('metrics', {}),
+                'summary': data.get('summary', {})
+            }
+            
+            # Only add error field if present
+            if 'error' in data:
+                document['error'] = data['error']
+            
+            # Insert document into MongoDB
+            result = self.collection.insert_one(document)
+            
+            if result.inserted_id:
+                print(f"✓ Successfully stored Spiral-Bench snapshot in MongoDB (ID: {result.inserted_id})")
+                return True
+            else:
+                print("✗ Failed to store Spiral-Bench snapshot in MongoDB")
+                return False
+                
+        except Exception as e:
+            print(f"✗ Error storing Spiral-Bench data in MongoDB: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+    
     async def scrape(self) -> Dict:
         """
         Scrape Spiral-Bench leaderboard data
@@ -410,7 +458,7 @@ class SpiralBenchDataCollector:
         # Combine safety score and individual metrics
         all_metrics = {**safety_score_data, **metric_data}
         
-        return {
+        result = {
             'success': True,
             'source': source_used,
             'timestamp': datetime.now(timezone.utc).isoformat(),
@@ -421,4 +469,36 @@ class SpiralBenchDataCollector:
                 'total_models': len(models_data)
             }
         }
+        
+        # Store in MongoDB
+        self.store_in_mongodb(result)
+        
+        return result
 
+
+async def main():
+    """Test the SpiralBench data collector"""
+    collector = SpiralBenchDataCollector()
+    result = await collector.scrape()
+    
+    print("\n" + "="*60)
+    print("SPIRAL-BENCH DATA COLLECTION SUMMARY")
+    print("="*60)
+    
+    if result['success']:
+        print(f"✓ Successfully collected data from: {result.get('source', 'N/A')}")
+        print(f"✓ Total metrics: {result['summary'].get('total_metrics', 0)}")
+        print(f"✓ Total models: {result['summary'].get('total_models', 0)}")
+        print(f"✓ Timestamp: {result.get('timestamp', 'N/A')}")
+        print("\nMetrics collected:")
+        for metric_name in result['summary'].get('metric_names', []):
+            print(f"  - {metric_name}")
+    else:
+        print(f"✗ Error: {result.get('error', 'Unknown error')}")
+    
+    print("="*60)
+
+
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(main())

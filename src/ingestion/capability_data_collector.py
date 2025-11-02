@@ -13,6 +13,12 @@ import re
 import json
 import csv
 import io
+import sys
+import os
+
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
+from db.mongodb import get_collection
 
 
 class CapabilityDataCollector:
@@ -28,8 +34,9 @@ class CapabilityDataCollector:
         'SWE-Bench': 'swe_bench_verified_score',
     }
     
-    def __init__(self):
+    def __init__(self, collection_name: str = 'capability_snapshots'):
         self.api_url = "https://llm-stats.com/api/models"
+        self.collection = get_collection(collection_name)
         
         # EQ-Bench benchmark URLs
         self.eqbench3_url = "https://eqbench.com/eqbench3_chartdata.js?v=1.0.4"
@@ -676,6 +683,47 @@ class CapabilityDataCollector:
         
         return results
     
+    def store_in_mongodb(self, data: Dict) -> bool:
+        """
+        Store capability data snapshot in MongoDB
+        
+        Args:
+            data: The result dictionary from scrape() method
+            
+        Returns:
+            bool: True if successfully stored, False otherwise
+        """
+        try:
+            # Create document with datetime field
+            document = {
+                'datetime': datetime.now(timezone.utc),
+                'timestamp': data.get('timestamp', datetime.now(timezone.utc).isoformat()),
+                'success': data.get('success', True),
+                'sources': data.get('sources', []),
+                'capabilities': data.get('capabilities', {}),
+                'summary': data.get('summary', {})
+            }
+            
+            # Only add error field if present
+            if 'error' in data:
+                document['error'] = data['error']
+            
+            # Insert document into MongoDB
+            result = self.collection.insert_one(document)
+            
+            if result.inserted_id:
+                print(f"✓ Successfully stored capability snapshot in MongoDB (ID: {result.inserted_id})")
+                return True
+            else:
+                print("✗ Failed to store capability snapshot in MongoDB")
+                return False
+                
+        except Exception as e:
+            print(f"✗ Error storing capability data in MongoDB: {e}")
+            import traceback
+            traceback.print_exc()
+            return False
+    
     async def scrape(self) -> Dict:
         """
         Main scraping method
@@ -870,6 +918,9 @@ class CapabilityDataCollector:
         if not results['capabilities']:
             results['success'] = False
             results['error'] = 'Failed to fetch any capability data'
+        
+        # Store in MongoDB
+        self.store_in_mongodb(results)
         
         return results
 
