@@ -7,11 +7,11 @@
 ## Quick Start
 
 ```bash
-python3 forecast_model.py
+python3 src/forecast/forecast_model.py
 ```
 
-Generates:
-- `cognitive_debt_forecast_final.png` - Main visualization (6 charts)
+Generates (saved to `src/results/`):
+- `cognitive_debt_forecast_final.png` - Main visualization (2 charts)
 - `forecast_scenarios.csv` - Scenario projections (2024-2035)
 - `individual_timeline.csv` - Individual exposure harm timeline
 
@@ -52,6 +52,12 @@ Papers tell us **HOW FAST** and **HOW MUCH** cognitive debt accumulates:
    - **Calibrates:** Realistic adoption limits
 
 See [paper_calibrations.md](paper_calibrations.md) for full details.
+
+### Data Sources
+
+The forecast model uses data-driven drivers from the exploratory analysis:
+- See `src/exploratory_data_analysis/` for data analysis scripts
+- Input data: `src/data/Collated_data.xlsx`
 
 ### Data as Drivers (What, Where, When)
 

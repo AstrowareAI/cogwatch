@@ -605,7 +605,7 @@ def create_visualizations(cleaned_data, normalized_data, growth_factors,
                     f'{val:.1f}%', ha='center', va='bottom', fontweight='bold')
 
     plt.tight_layout()
-    plt.savefig('/Users/preethamsathyamurthy/Github/Astroware/cogwatch/src/data_analysis/exploratory_analysis_comprehensive.png',
+    plt.savefig('/Users/preethamsathyamurthy/Github/Astroware/cogwatch/src/results/exploratory_analysis_comprehensive.png',
                 dpi=300, bbox_inches='tight')
     print("\n✓ Saved comprehensive visualization")
 

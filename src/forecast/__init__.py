@@ -1,0 +1,2 @@
+# Forecast module for Cogwatch
+

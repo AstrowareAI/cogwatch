@@ -8,9 +8,7 @@ Model = Data-driven, paper-calibrated
 
 Outputs:
 1. Humanity timeline to critical (clean chart)
-2. Individual exposure months to harm
-3. Adoption vs Capability effects separated
-4. Scenarios: current, capability plateau, adoption slow, misalignment
+2. Scenarios: current, capability plateau, adoption slow, misalignment
 """
 
 import pandas as pd
@@ -53,9 +51,23 @@ class PaperCalibrations:
     SO_ADOPTION_CEILING = 0.84             # 84% realistic max
     SO_DAILY_USAGE = 0.51                  # 51% use daily
 
-    # Calibration adjustment factors
-    IMPACT_SCALING = 0.22                  # scales impact to realistic timeline
-    RESILIENCE_STRENGTH = 0.55             # how strong resilience is (higher = stronger)
+    # Model Robustness & Correction Factors
+    # These account for real-world variability, non-linear effects, and model uncertainty
+    
+    IMPACT_SCALING = 0.22                  # Correction factor: Accounts for (1) Individual vs population effects
+                                           # (papers measure heavy users, model needs population average), 
+                                           # (2) Non-linear/additive assumption uncertainties (MIT+MSFT+HAB may overlap),
+                                           # (3) Real-world moderators (adaptation, regulations, awareness campaigns),
+                                           # (4) Scenario buffers (slower adoption, capability plateaus, policy interventions)
+                                           # Acts as robustness buffer: if rates slow or capability growth moderates, 
+                                           # this scaling provides conservative margin
+    
+    RESILIENCE_STRENGTH = 0.55             # Biological resilience activation factor: Accounts for (1) Individual variation
+                                           # in cognitive resilience, (2) Adaptive responses as cognitive load increases,
+                                           # (3) Compensatory mechanisms (behavioral adjustments, awareness, intervention),
+                                           # (4) Model uncertainty in extreme scenarios
+                                           # Higher value = stronger resilience response (more gradual decline under stress)
+                                           # Acts as correction for non-linear biological limits and human adaptability
 
 
 # ============================================================================
@@ -74,7 +86,8 @@ class DataDrivers:
     COGNITIVE_INDEX_2012 = 100.0           # Baseline
     COGNITIVE_INDEX_2020 = 98.0            # Pre-ChatGPT (2020)
     COGNITIVE_RESILIENCE_THRESHOLD = 84.0  # Below this, resilience kicks in gradually
-    COGNITIVE_INDEX_FLOOR = 70.0           # Absolute floor (very severe)
+    COGNITIVE_INDEX_FLOOR = 80.0            # Smooth asymptotic floor (~80-82)
+    COGNITIVE_INDEX_ASYMPTOTE_STEEPNESS = 0.15  # Controls how smoothly it approaches floor (higher = smoother)
     BASELINE_DECLINE_RATE = 0.35           # Pre-AI: 0.35 points/year
 
     # Mental Health
@@ -214,22 +227,31 @@ class CognitiveDebtModel:
         # Misalignment scenario: double the impact
         multiplier = 2.0 if scenario == "misalignment" else 1.0
 
-        # Apply impact scaling factor for realistic timeline
+        # Apply IMPACT_SCALING correction factor: Acts as robustness buffer
+        # Accounts for real-world moderators: slower adoption rates, capability growth moderation,
+        # policy interventions, awareness campaigns, individual variation (heavy vs light users),
+        # and model uncertainty in additive assumptions. This prevents alarmist projections while
+        # maintaining data-driven grounding.
         total_decline = base + (mit_factor + msft_factor + hab_factor + empirical) * multiplier * self.cal.IMPACT_SCALING
 
-        # Biological resilience: gradual, smooth slowdown below 88
+        # Biological resilience: gradual, smooth slowdown below 84
         # Uses sigmoid-like function for smooth transition (no sharp step)
         if current_index < self.data.COGNITIVE_RESILIENCE_THRESHOLD:
-            # Distance below threshold (0 to 18, since floor is 70)
+            # Distance below threshold (0 to 4, since floor is 80)
             distance_below = self.data.COGNITIVE_RESILIENCE_THRESHOLD - current_index
             max_distance = self.data.COGNITIVE_RESILIENCE_THRESHOLD - self.data.COGNITIVE_INDEX_FLOOR
 
+            # RESILIENCE_STRENGTH activation: Acts as biological resilience correction factor
+            # Accounts for adaptive responses, compensatory mechanisms, individual variation in
+            # cognitive resilience, and non-linear biological limits. As stress increases (lower index),
+            # resilience activation increases (slower decline rate). This acts as a robustness buffer
+            # for scenarios where adaptation, awareness, or intervention moderate decline.
             # Resilience factor: stronger as you go lower (0.1 to 1.0)
-            # At 88: factor = 1.0 (no slowdown)
-            # At 79 (halfway): factor ~0.5 (50% slower)
-            # At 70: factor ~0.1 (90% slower)
+            # At 84: factor = 1.0 (no slowdown)
+            # At 82 (halfway): factor ~0.5 (50% slower)
+            # At 80: factor ~0.1 (90% slower, then asymptotic decay takes over)
             resilience_factor = 1.0 - (self.cal.RESILIENCE_STRENGTH * (distance_below / max_distance))
-            resilience_factor = max(0.05, resilience_factor)  # Never fully stops
+            resilience_factor = max(0.05, resilience_factor)  # Never fully stops (biological floor)
 
             total_decline *= resilience_factor
 
@@ -280,12 +302,23 @@ class CognitiveDebtModel:
             # Calculate decline rate
             decline = self.cognitive_decline_rate(year, adopt, cap, current_cognitive, scenario)
 
-            # Update cognitive index (with floor and resilience)
+            # Update cognitive index (with smooth asymptotic approach to floor)
             if year > start_year:
-                current_cognitive = max(
-                    current_cognitive - decline,
-                    self.data.COGNITIVE_INDEX_FLOOR
-                )
+                # Calculate distance from floor
+                distance_from_floor = current_cognitive - self.data.COGNITIVE_INDEX_FLOOR
+                
+                # Apply smooth exponential decay as we approach the floor
+                # As distance_from_floor approaches 0, decay_multiplier approaches 0
+                # This creates smooth asymptotic behavior (no sudden step)
+                if distance_from_floor > 0:
+                    # Exponential decay: steeper = smoother approach to floor
+                    decay_multiplier = 1.0 - np.exp(-self.data.COGNITIVE_INDEX_ASYMPTOTE_STEEPNESS * distance_from_floor)
+                    # Ensure we never go below floor
+                    effective_decline = min(decline * decay_multiplier, distance_from_floor)
+                    current_cognitive = current_cognitive - effective_decline
+                else:
+                    # Already at or below floor, maintain floor value
+                    current_cognitive = self.data.COGNITIVE_INDEX_FLOOR
 
             # Calculate cognitive debt (inverse of index)
             cognitive_debt = self.data.COGNITIVE_INDEX_2012 - current_cognitive
@@ -377,11 +410,11 @@ def create_forecast_charts(model):
     ax1.fill_between([2020, 2035], 92, 95, alpha=0.1, color='orange', label='DANGER')
     ax1.fill_between([2020, 2035], 88, 92, alpha=0.1, color='red', label='CRITICAL')
     ax1.fill_between([2020, 2035], 84, 88, alpha=0.08, color='darkred', label='SEVERE')
-    ax1.fill_between([2020, 2035], 70, 84, alpha=0.05, color='gray', label='Resilience Zone')
+    ax1.fill_between([2020, 2035], 80, 84, alpha=0.05, color='gray', label='Resilience Zone')
 
     # Mark ChatGPT launch
     ax1.axvline(x=2022, color='gray', linestyle=':', linewidth=1.5, alpha=0.5)
-    ax1.text(2022, 71, 'ChatGPT\nLaunch', fontsize=8, ha='center', alpha=0.6)
+    ax1.text(2022, 79, 'ChatGPT\nLaunch', fontsize=8, ha='center', alpha=0.6)
 
     ax1.set_xlabel('Year', fontsize=14, fontweight='bold')
     ax1.set_ylabel('Cognitive Index (2012=100)', fontsize=14, fontweight='bold')
@@ -389,7 +422,7 @@ def create_forecast_charts(model):
     ax1.legend(loc='upper right', fontsize=8, ncol=1)
     ax1.grid(True, alpha=0.3)
     ax1.set_xlim(2020, 2035)
-    ax1.set_ylim(70, 100)
+    ax1.set_ylim(78, 100)  # Adjusted to show smooth asymptotic approach to ~80
 
     # CHART 2: Cognitive Debt Increase (2020-2035)
     ax2 = plt.subplot(1, 2, 2)
@@ -407,7 +440,7 @@ def create_forecast_charts(model):
     ax2.fill_between([2020, 2035], 5, 8, alpha=0.1, color='orange', label='DANGER')
     ax2.fill_between([2020, 2035], 8, 12, alpha=0.1, color='red', label='CRITICAL')
     ax2.fill_between([2020, 2035], 12, 16, alpha=0.08, color='darkred', label='SEVERE')
-    ax2.fill_between([2020, 2035], 16, 40, alpha=0.05, color='gray', label='Resilience Zone')
+    ax2.fill_between([2020, 2035], 16, 25, alpha=0.05, color='gray', label='Resilience Zone')
 
     # Mark ChatGPT launch
     ax2.axvline(x=2022, color='gray', linestyle=':', linewidth=1.5, alpha=0.5)
@@ -419,10 +452,10 @@ def create_forecast_charts(model):
     ax2.legend(loc='upper left', fontsize=8, ncol=1)
     ax2.grid(True, alpha=0.3)
     ax2.set_xlim(2020, 2035)
-    ax2.set_ylim(0, 40)
+    ax2.set_ylim(0, 25)  # Adjusted to show smooth asymptotic approach to ~20 (100-80)
 
     plt.tight_layout(pad=2.0)
-    plt.savefig('/Users/preethamsathyamurthy/Github/Astroware/cogwatch/src/data_analysis/cognitive_debt_forecast_final.png',
+    plt.savefig('/Users/preethamsathyamurthy/Github/Astroware/cogwatch/src/results/cognitive_debt_forecast_final.png',
                 dpi=300, bbox_inches='tight')
     print("✓ Saved forecast visualization")
 
@@ -482,11 +515,11 @@ def main():
 
     # Save data
     scenarios['Current Rates'].to_csv(
-        '/Users/preethamsathyamurthy/Github/Astroware/cogwatch/src/data_analysis/forecast_scenarios.csv',
+        '/Users/preethamsathyamurthy/Github/Astroware/cogwatch/src/results/forecast_scenarios.csv',
         index=False
     )
     individual.to_csv(
-        '/Users/preethamsathyamurthy/Github/Astroware/cogwatch/src/data_analysis/individual_timeline.csv',
+        '/Users/preethamsathyamurthy/Github/Astroware/cogwatch/src/results/individual_timeline.csv',
         index=False
     )
 

@@ -339,7 +339,7 @@ The exploratory data analysis reveals:
 ## How to Run Analysis
 
 ```bash
-cd src/data_analysis
+cd src/exploratory_data_analysis
 python3 exploratory_analysis.py
 ```
 
